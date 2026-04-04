@@ -1,0 +1,47 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "argos"
+version = "0.1.0"
+description = "AI-powered vision algorithm design agent"
+readme = "README.md"
+requires-python = ">=3.11"
+authors = [
+    {name = "Argos Team"}
+]
+keywords = ["computer-vision", "ai", "algorithm-design", "inspection"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+dependencies = [
+    "opencv-python-headless",
+    "PyQt6",
+    "numpy",
+    "pytest",
+    "pytest-qt",
+    "pytest-cov",
+    "cryptography",
+    "keyring",
+    "python-dotenv",
+    "reportlab"
+]
+
+[project.scripts]
+argos = "main:main"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "-v --tb=short"
+
+[tool.setuptools]
+packages = ["core", "ui", "config"]

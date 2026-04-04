@@ -1,0 +1,10 @@
+opencv-python-headless
+PyQt6
+numpy
+pytest
+pytest-qt
+pytest-cov
+cryptography
+keyring
+python-dotenv
+reportlab
