@@ -1,0 +1,1 @@
+Place icon.png (512x512) and other assets here.
