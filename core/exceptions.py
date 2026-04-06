@@ -5,6 +5,12 @@ This module defines the exception hierarchy implementing the 3-layer error
 handling strategy as defined in the project plan.
 """
 
+import logging
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from logging import Logger
+
 
 class InputValidationError(Exception):
     """
@@ -13,7 +19,12 @@ class InputValidationError(Exception):
     Raised when input data fails validation (unsupported formats, 
     invalid ROI coordinates, insufficient sample data, etc.)
     """
-    pass
+    
+    @classmethod
+    def raise_with_log(cls, message: str, logger: "Logger") -> None:
+        """Log the message at ERROR level and raise the exception."""
+        logger.error(f"Input validation error: {message}")
+        raise cls(message)
 
 
 class RuntimeProcessingError(Exception):
@@ -23,7 +34,12 @@ class RuntimeProcessingError(Exception):
     Raised during algorithm execution when processing cannot continue
     (algorithm execution failures, image processing errors, etc.)
     """
-    pass
+    
+    @classmethod
+    def raise_with_log(cls, message: str, logger: "Logger") -> None:
+        """Log the message at ERROR level and raise the exception."""
+        logger.error(f"Runtime processing error: {message}")
+        raise cls(message)
 
 
 class OutputValidationError(Exception):
@@ -33,7 +49,12 @@ class OutputValidationError(Exception):
     Raised when generated results don't meet quality criteria
     (algorithm scores below threshold, validation failures, etc.)
     """
-    pass
+    
+    @classmethod
+    def raise_with_log(cls, message: str, logger: "Logger") -> None:
+        """Log the message at ERROR level and raise the exception."""
+        logger.error(f"Output validation error: {message}")
+        raise cls(message)
 
 
 class AIProviderError(Exception):
@@ -43,4 +64,9 @@ class AIProviderError(Exception):
     Raised when AI API calls fail due to network issues, authentication
     failures, rate limits, or invalid responses.
     """
-    pass
+    
+    @classmethod
+    def raise_with_log(cls, message: str, logger: "Logger") -> None:
+        """Log the message at ERROR level and raise the exception."""
+        logger.error(f"AI provider error: {message}")
+        raise cls(message)
