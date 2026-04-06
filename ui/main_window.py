@@ -14,7 +14,10 @@ from PyQt6.QtCore import QEvent
 from PyQt6.QtGui import QIcon
 
 from core.logger import get_logger
+from core.key_manager import KeyManager
+from core.providers.provider_factory import ProviderFactory
 from ui.style import DARK_THEME_QSS
+from ui.components.toolbar import ArgosToolbar
 
 
 class MainWindow(QMainWindow):
@@ -30,7 +33,13 @@ class MainWindow(QMainWindow):
         super().__init__()
         
         self._logger = get_logger("main_window")
+        
+        # Initialize key manager and provider factory
+        self.key_manager = KeyManager()
+        self.provider_factory = ProviderFactory()
+        
         self._setup_window()
+        self._setup_toolbar()
         self._setup_layout()
         self._setup_status_bar()
         
@@ -48,6 +57,18 @@ class MainWindow(QMainWindow):
             self.setWindowIcon(QIcon(str(icon_path)))
             
         self._logger.info("Main window initialized")
+    
+    def _setup_toolbar(self) -> None:
+        """Setup the main toolbar."""
+        self._toolbar = ArgosToolbar(
+            self.key_manager,
+            self.provider_factory,
+            self
+        )
+        self.addToolBar(self._toolbar)
+        
+        # Connect toolbar signals
+        self._toolbar.connection_changed.connect(self.set_connection_status)
     
     def _setup_layout(self) -> None:
         """Setup the main window layout."""
@@ -74,18 +95,13 @@ class MainWindow(QMainWindow):
         main_layout.addWidget(self._content_area)
         
     def _setup_status_bar(self) -> None:
-        """Setup the status bar with version and connection status."""
+        """Setup the status bar with version info."""
         status_bar = QStatusBar()
         self.setStatusBar(status_bar)
         
-        # Left label: Version
+        # Version label only (connection status now handled by toolbar)
         version_label = QLabel("Argos v0.1.0")
         status_bar.addWidget(version_label)
-        
-        # Right label: Connection status
-        self._connection_label = QLabel()
-        self.set_connection_status(False)  # Initially disconnected
-        status_bar.addPermanentWidget(self._connection_label)
         
     def closeEvent(self, event: QEvent) -> None:
         """Handle window close event."""
@@ -98,18 +114,14 @@ class MainWindow(QMainWindow):
         
     def set_connection_status(self, connected: bool, provider_name: str = "") -> None:
         """
-        Update the connection status in the status bar.
+        Update the connection status (now handled by toolbar).
+        
+        This method is kept for compatibility and logs status changes.
         
         Args:
             connected: Whether AI provider is connected
             provider_name: Name of the connected AI provider
         """
-        if connected and provider_name:
-            status_text = f'<span style="color: #43A047;">● 연결됨 ({provider_name})</span>'
-        else:
-            status_text = '<span style="color: #E53935;">● 미연결</span>'
-            
-        self._connection_label.setText(status_text)
         self._logger.debug(f"Connection status updated: connected={connected}, provider={provider_name}")
         
     def get_content_area(self) -> QStackedWidget:
