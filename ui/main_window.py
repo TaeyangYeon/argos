@@ -18,6 +18,13 @@ from core.key_manager import KeyManager
 from core.providers.provider_factory import ProviderFactory
 from ui.style import DARK_THEME_QSS
 from ui.components.toolbar import ArgosToolbar
+from ui.components.sidebar import ArgosSidebar, PageID
+from ui.pages.dashboard_page import DashboardPage
+from ui.pages.upload_page import UploadPage
+from ui.pages.roi_page import ROIPage
+from ui.pages.analysis_page import AnalysisPage
+from ui.pages.result_page import ResultPage
+from ui.pages.settings_page import SettingsPage
 
 
 class MainWindow(QMainWindow):
@@ -41,6 +48,7 @@ class MainWindow(QMainWindow):
         self._setup_window()
         self._setup_toolbar()
         self._setup_layout()
+        self._setup_pages()
         self._setup_status_bar()
         
     def _setup_window(self) -> None:
@@ -80,19 +88,55 @@ class MainWindow(QMainWindow):
         main_layout.setContentsMargins(0, 0, 0, 0)
         main_layout.setSpacing(0)
         
-        # Left sidebar (fixed width 220px)
-        self._sidebar_frame = QFrame()
-        self._sidebar_frame.setObjectName("sidebar")
-        self._sidebar_frame.setFixedWidth(220)
-        self._sidebar_frame.setMaximumWidth(220)
+        # Left sidebar with navigation
+        self._sidebar = ArgosSidebar()
         
         # Right content area (expandable)
         self._content_area = QStackedWidget()
         self._content_area.setObjectName("content")
         
         # Add to layout
-        main_layout.addWidget(self._sidebar_frame)
+        main_layout.addWidget(self._sidebar)
         main_layout.addWidget(self._content_area)
+        
+    def _setup_pages(self) -> None:
+        """Setup all application pages and navigation."""
+        # Create all pages
+        self._pages = {
+            PageID.DASHBOARD: DashboardPage(),
+            PageID.UPLOAD: UploadPage(),
+            PageID.ROI: ROIPage(),
+            PageID.ANALYSIS: AnalysisPage(),
+            PageID.RESULTS: ResultPage(),
+            PageID.SETTINGS: SettingsPage(),
+        }
+        
+        # Add pages to content area in PageID order
+        for page_id in [PageID.DASHBOARD, PageID.UPLOAD, PageID.ROI, 
+                       PageID.ANALYSIS, PageID.RESULTS, PageID.SETTINGS]:
+            self._content_area.addWidget(self._pages[page_id])
+            
+        # Connect sidebar navigation signal
+        self._sidebar.page_changed.connect(self._on_page_changed)
+        
+        # Set initial page to dashboard
+        self._sidebar.navigate_to(PageID.DASHBOARD)
+        
+    def _on_page_changed(self, page_id: PageID) -> None:
+        """
+        Handle page navigation from sidebar.
+        
+        Args:
+            page_id: The page to navigate to
+        """
+        if page_id in self._pages:
+            page_widget = self._pages[page_id]
+            page_index = self._content_area.indexOf(page_widget)
+            if page_index >= 0:
+                self._content_area.setCurrentIndex(page_index)
+                self._logger.info(f"Switched to page: {page_id.value}")
+        else:
+            self._logger.error(f"Unknown page ID: {page_id}")
         
     def _setup_status_bar(self) -> None:
         """Setup the status bar with version info."""
@@ -133,11 +177,11 @@ class MainWindow(QMainWindow):
         """
         return self._content_area
         
-    def get_sidebar_frame(self) -> QFrame:
+    def get_sidebar(self) -> ArgosSidebar:
         """
-        Get the sidebar frame for adding navigation widgets.
+        Get the sidebar navigation widget.
         
         Returns:
-            The sidebar QFrame widget
+            The ArgosSidebar widget
         """
-        return self._sidebar_frame
+        return self._sidebar
