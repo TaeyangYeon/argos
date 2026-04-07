@@ -107,7 +107,7 @@ class MainWindow(QMainWindow):
         self._pages = {
             PageID.DASHBOARD: DashboardPage(self.image_store, self.key_manager),
             PageID.UPLOAD: UploadPage(self.image_store),
-            PageID.ROI: ROIPage(),
+            PageID.ROI: ROIPage(self.image_store),
             PageID.ANALYSIS: AnalysisPage(),
             PageID.RESULTS: ResultPage(),
             PageID.SETTINGS: SettingsPage(),
@@ -120,6 +120,14 @@ class MainWindow(QMainWindow):
             
         # Connect sidebar navigation signal
         self._sidebar.page_changed.connect(self._on_page_changed)
+        
+        # Connect page navigation signals
+        self._pages[PageID.DASHBOARD].navigate_requested.connect(
+            lambda page_id: self._sidebar.navigate_to(PageID(page_id))
+        )
+        self._pages[PageID.ROI].navigate_requested.connect(
+            lambda page_id: self._sidebar.navigate_to(PageID(page_id))
+        )
         
         # Set initial page to dashboard
         self._sidebar.navigate_to(PageID.DASHBOARD)
