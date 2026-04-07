@@ -15,6 +15,7 @@ from PyQt6.QtGui import QIcon
 
 from core.logger import get_logger
 from core.key_manager import KeyManager
+from core.image_store import ImageStore
 from core.providers.provider_factory import ProviderFactory
 from ui.style import DARK_THEME_QSS
 from ui.components.toolbar import ArgosToolbar
@@ -41,8 +42,9 @@ class MainWindow(QMainWindow):
         
         self._logger = get_logger("main_window")
         
-        # Initialize key manager and provider factory
+        # Initialize key manager, image store, and provider factory
         self.key_manager = KeyManager()
+        self.image_store = ImageStore()
         self.provider_factory = ProviderFactory()
         
         self._setup_window()
@@ -101,9 +103,9 @@ class MainWindow(QMainWindow):
         
     def _setup_pages(self) -> None:
         """Setup all application pages and navigation."""
-        # Create all pages
+        # Create all pages with required dependencies
         self._pages = {
-            PageID.DASHBOARD: DashboardPage(),
+            PageID.DASHBOARD: DashboardPage(self.image_store, self.key_manager),
             PageID.UPLOAD: UploadPage(),
             PageID.ROI: ROIPage(),
             PageID.ANALYSIS: AnalysisPage(),
