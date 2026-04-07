@@ -17,6 +17,8 @@ from .base_page import BasePage, PageHeader
 from ui.components.sidebar import PageID
 from ui.components.drop_zone import DropZone
 from ui.components.toast import ToastMessage
+from ui.components.thumbnail_grid import ThumbnailGrid
+from ui.components.image_viewer_dialog import ImageViewerDialog
 from core.image_store import ImageStore, ImageType
 from core.validators import ImageValidator
 from core.exceptions import InputValidationError
@@ -54,6 +56,9 @@ class UploadPage(BasePage):
         self._ng_warning_banner = None
         self._summary_labels = {}
         self._toast = None
+        self._thumbnail_grid = None
+        self._filter_buttons = {}
+        self._current_filter = None
         
         super().__init__(PageID.UPLOAD, "이미지 업로드", parent)
         
@@ -84,6 +89,9 @@ class UploadPage(BasePage):
         
         # Drop zones row
         self._setup_drop_zones(content_layout)
+        
+        # Thumbnail grid section
+        self._setup_thumbnail_section(content_layout)
         
         # Upload summary
         self._setup_summary_section(content_layout)
@@ -240,6 +248,147 @@ class UploadPage(BasePage):
         
         parent_layout.addLayout(button_layout)
         
+    def _setup_thumbnail_section(self, parent_layout: QVBoxLayout) -> None:
+        """Setup the thumbnail grid section with filter tabs."""
+        # Section header with filter tabs
+        header_layout = QHBoxLayout()
+        
+        # Section title
+        title_label = QLabel("업로드된 이미지")
+        title_font = QFont()
+        title_font.setPointSize(16)
+        title_font.setBold(True)
+        title_label.setFont(title_font)
+        title_label.setStyleSheet("color: #E0E0E0;")
+        header_layout.addWidget(title_label)
+        
+        # Add some spacing
+        header_layout.addItem(QSpacerItem(20, 0, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum))
+        
+        # Filter tabs
+        filter_layout = QHBoxLayout()
+        filter_layout.setSpacing(8)
+        
+        filters = [
+            ("전체", None),
+            ("Align OK", ImageType.ALIGN_OK),
+            ("Inspection OK", ImageType.INSPECTION_OK),
+            ("Inspection NG", ImageType.INSPECTION_NG)
+        ]
+        
+        for filter_name, filter_type in filters:
+            button = QPushButton(filter_name)
+            button.setCheckable(True)
+            button.clicked.connect(lambda checked, ft=filter_type: self._on_filter_changed(ft))
+            
+            if filter_type is None:  # "전체" button starts selected
+                button.setChecked(True)
+                button.setObjectName("primaryBtn")
+            
+            self._filter_buttons[filter_type] = button
+            filter_layout.addWidget(button)
+            
+        header_layout.addLayout(filter_layout)
+        parent_layout.addLayout(header_layout)
+        
+        # Thumbnail grid
+        self._thumbnail_grid = ThumbnailGrid()
+        self._thumbnail_grid.setMinimumHeight(200)
+        self._thumbnail_grid.setMaximumHeight(400)
+        
+        # Connect grid signals
+        self._thumbnail_grid.view_requested.connect(self._on_view_requested)
+        self._thumbnail_grid.delete_requested.connect(self._on_delete_requested)
+        
+        parent_layout.addWidget(self._thumbnail_grid)
+        
+    def _on_filter_changed(self, filter_type: ImageType | None) -> None:
+        """
+        Handle filter tab selection change.
+        
+        Args:
+            filter_type: Selected image type filter, or None for all
+        """
+        self._current_filter = filter_type
+        
+        # Update button states (exclusive selection)
+        for ft, button in self._filter_buttons.items():
+            if ft == filter_type:
+                button.setChecked(True)
+                button.setObjectName("primaryBtn")
+            else:
+                button.setChecked(False)
+                button.setObjectName("")
+            # Force style update
+            button.setStyle(button.style())
+            
+        # Refresh grid with new filter
+        self._refresh_grid()
+        
+    def _on_view_requested(self, image_id: str) -> None:
+        """
+        Handle view request from thumbnail grid.
+        
+        Args:
+            image_id: ID of image to view
+        """
+        # Get image metadata
+        image_meta = self._image_store.get(image_id)
+        if image_meta:
+            # Open image viewer dialog
+            dialog = ImageViewerDialog(image_meta, self._image_store, self)
+            dialog.exec()
+            
+    def _on_delete_requested(self, image_id: str) -> None:
+        """
+        Handle delete request from thumbnail grid.
+        
+        Args:
+            image_id: ID of image to delete
+        """
+        # Show confirmation dialog
+        msg_box = QMessageBox(self)
+        msg_box.setWindowTitle("이미지 삭제")
+        msg_box.setText("이 이미지를 삭제하시겠습니까?")
+        msg_box.setStandardButtons(QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
+        msg_box.setDefaultButton(QMessageBox.StandardButton.No)
+        msg_box.setIcon(QMessageBox.Icon.Question)
+        
+        if msg_box.exec() == QMessageBox.StandardButton.Yes:
+            # Remove from store
+            self._image_store.remove(image_id)
+            
+            # Refresh UI
+            self._refresh_ui()
+            
+            # Show success toast
+            self._toast.show_success("이미지 삭제 완료")
+            
+            # Emit update signal
+            self.images_updated.emit()
+            
+    def _refresh_grid(self) -> None:
+        """Refresh the thumbnail grid with current filter."""
+        if not self._thumbnail_grid:
+            return
+            
+        # Get all images from store
+        all_images = self._image_store.get_all()
+        
+        # Filter images based on current filter
+        if self._current_filter is None:
+            # Show all images
+            filtered_images = all_images
+        else:
+            # Filter by type
+            filtered_images = [
+                img for img in all_images 
+                if img.image_type == self._current_filter
+            ]
+            
+        # Update grid
+        self._thumbnail_grid.refresh(filtered_images)
+        
     def _handle_files_dropped(self, file_paths: list, image_type: ImageType) -> None:
         """
         Handle files dropped on a drop zone.
@@ -335,6 +484,9 @@ class UploadPage(BasePage):
             
         # Update NG warning banner visibility
         self._update_ng_warning(inspection_ok_count, inspection_ng_count)
+        
+        # Update thumbnail grid
+        self._refresh_grid()
         
     def _update_ng_warning(self, ok_count: int, ng_count: int) -> None:
         """
