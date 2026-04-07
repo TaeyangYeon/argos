@@ -106,7 +106,7 @@ class MainWindow(QMainWindow):
         # Create all pages with required dependencies
         self._pages = {
             PageID.DASHBOARD: DashboardPage(self.image_store, self.key_manager),
-            PageID.UPLOAD: UploadPage(),
+            PageID.UPLOAD: UploadPage(self.image_store),
             PageID.ROI: ROIPage(),
             PageID.ANALYSIS: AnalysisPage(),
             PageID.RESULTS: ResultPage(),
