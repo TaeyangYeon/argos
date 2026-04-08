@@ -3,7 +3,7 @@
 마지막 업데이트: 2026-04-08
 
 ## 전체 진행률
-- 완료: 20 / 50 Steps
+- 완료: 21 / 50 Steps
 - 현재 Phase: Phase 3 — Feature 분석 엔진 (진행 중)
 
 ---
@@ -46,7 +46,7 @@
 | 18 | 히스토그램 및 밝기 분석 | ✅ 완료 | 2026-04-08 | HistogramAnalyzer, HistogramAnalysisResult 구현 완료 |
 | 19 | 노이즈 수준 분석 | ✅ 완료 | 2026-04-08 | NoiseAnalyzer, NoiseAnalysisResult 구현 완료 |
 | 20 | 에지 강도 분석 | ✅ 완료 | 2026-04-08 | EdgeAnalyzer, EdgeAnalysisResult 구현 완료. Sobel 그래디언트, 에지 밀도, 방향성 분석, Caliper 적합성 판단 |
-| 21 | 형상 및 Blob 특성 분석 | 🔲 대기 | - | |
+| 21 | 형상 및 Blob 특성 분석 | ✅ 완료 | 2026-04-08 | ShapeAnalyzer, BlobInfo, CircleInfo, ShapeAnalysisResult 구현 완료. Blob 감지, 원형도 측정, Hough 원 검출, 패턴 인식 |
 | 22 | Feature 분석 통합 및 AI 요약 | 🔲 대기 | - | |
 | 23 | 분석 실행 화면 UI | 🔲 대기 | - | |
 | 24 | Feature 분석 결과 UI 표시 | 🔲 대기 | - | |
