@@ -3,7 +3,7 @@
 마지막 업데이트: 2026-04-08
 
 ## 전체 진행률
-- 완료: 18 / 50 Steps
+- 완료: 19 / 50 Steps
 - 현재 Phase: Phase 3 — Feature 분석 엔진 (진행 중)
 
 ---
@@ -44,7 +44,7 @@
 | 16 | 설정 화면 | ✅ 완료 | 2026-04-08 | SectionCard, 슬라이더 동기화, 검증, 영속성 구현 완료 |
 | 17 | 이미지 로드 및 전처리 유틸리티 | ✅ 완료 | 2026-04-08 | ImageLoader, ImagePreprocessor 구현 완료. 메서드 체이닝, 파이프라인 추적 |
 | 18 | 히스토그램 및 밝기 분석 | ✅ 완료 | 2026-04-08 | HistogramAnalyzer, HistogramAnalysisResult 구현 완료 |
-| 19 | 노이즈 수준 분석 | 🔲 대기 | - | |
+| 19 | 노이즈 수준 분석 | ✅ 완료 | 2026-04-08 | NoiseAnalyzer, NoiseAnalysisResult 구현 완료 |
 | 20 | 에지 강도 분석 | 🔲 대기 | - | |
 | 21 | 형상 및 Blob 특성 분석 | 🔲 대기 | - | |
 | 22 | Feature 분석 통합 및 AI 요약 | 🔲 대기 | - | |
