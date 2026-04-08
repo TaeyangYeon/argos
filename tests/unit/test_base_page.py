@@ -6,6 +6,7 @@ and validates the concrete page implementations.
 """
 
 import pytest
+from unittest.mock import MagicMock
 from PyQt6.QtWidgets import QLabel
 
 from ui.pages.base_page import BasePage, PageHeader
@@ -53,14 +54,19 @@ class TestConcretePages:
     @pytest.fixture
     def dashboard_page(self, qtbot):
         """Create a DashboardPage instance for testing."""
-        page = DashboardPage()
+        mock_image_store = MagicMock()
+        mock_key_manager = MagicMock()
+        page = DashboardPage(mock_image_store, mock_key_manager)
         qtbot.addWidget(page)
         return page
         
     @pytest.fixture
     def upload_page(self, qtbot):
         """Create an UploadPage instance for testing."""
-        page = UploadPage()
+        mock_image_store = MagicMock()
+        # Mock the count method to return 0 for all image types
+        mock_image_store.count.return_value = 0
+        page = UploadPage(mock_image_store)
         qtbot.addWidget(page)
         return page
     

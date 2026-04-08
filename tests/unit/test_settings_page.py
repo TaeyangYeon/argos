@@ -56,10 +56,12 @@ class TestSettingsPageCreation:
         
     def test_page_has_toast(self, qtbot, settings_page):
         """Page has toast notification component after proper initialization."""
-        # Toast is created during setup_ui, which is called during __init__ -> BasePage.__init__ -> setup_ui
-        # Force the UI setup if it hasn't been called yet
-        if settings_page._toast is None:
-            settings_page.setup_ui()
+        # Toast is created lazily when first needed in _ensure_toast method
+        # Initially it should be None
+        assert settings_page._toast is None
+        
+        # After calling _ensure_toast, it should be created
+        settings_page._ensure_toast()
         assert settings_page._toast is not None
 
 

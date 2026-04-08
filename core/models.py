@@ -7,6 +7,7 @@ used throughout the system for configuration, results, and analysis.
 
 from dataclasses import dataclass, field
 from typing import Optional
+from datetime import datetime
 
 import numpy as np
 
@@ -73,3 +74,15 @@ class FeasibilityResult:
     recommended_approach: str  # "Rule-based" | "Edge Learning" | "Deep Learning"
     reasoning: str
     model_suggestion: Optional[str] = field(default=None)
+
+
+@dataclass
+class InspectionPurpose:
+    """Configuration for inspection purpose and criteria."""
+    inspection_type: str = ""  # 검사 유형: one of "치수측정" / "결함검출" / "형상검사" / "위치정렬" / "기타"
+    description: str = ""      # 검사 상세 설명 (free text)
+    ok_ng_criteria: str = ""   # OK/NG 판정 기준
+    target_feature: str = ""   # 검사 대상 특징 (e.g. 홀 지름, 폭, 스크래치)
+    measurement_unit: str = "" # 측정 단위 (mm, px, %)
+    tolerance: str = ""        # 허용 공차
+    created_at: str = field(default_factory=lambda: datetime.now().isoformat())

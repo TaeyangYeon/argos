@@ -13,7 +13,7 @@ import cv2
 import numpy as np
 
 from core.exceptions import InputValidationError
-from core.models import ROIConfig
+from core.models import ROIConfig, InspectionPurpose
 from config.constants import (
     SUPPORTED_FORMATS,
     MIN_IMAGE_WIDTH,
@@ -276,3 +276,59 @@ class SampleValidator:
         """
         if ok_count == 0:
             raise InputValidationError("OK 이미지가 최소 1장 필요합니다.")
+
+
+class PurposeValidator:
+    """Static methods for validating inspection purpose configurations."""
+    
+    @staticmethod
+    def validate_not_empty(purpose: InspectionPurpose) -> None:
+        """
+        Validate that purpose has non-empty description and inspection_type.
+        
+        Args:
+            purpose: InspectionPurpose instance
+            
+        Raises:
+            InputValidationError: If description or inspection_type is empty
+        """
+        if purpose.description.strip() == "":
+            raise InputValidationError("검사 설명이 비어있습니다.")
+        
+        if purpose.inspection_type.strip() == "":
+            raise InputValidationError("검사 유형이 비어있습니다.")
+    
+    @staticmethod
+    def validate_description_length(description: str) -> None:
+        """
+        Validate that description is at least 10 characters long.
+        
+        Args:
+            description: Description string to validate
+            
+        Raises:
+            InputValidationError: If description is less than 10 characters
+        """
+        if len(description.strip()) < 10:
+            raise InputValidationError("검사 설명을 10자 이상 입력해주세요.")
+    
+    @staticmethod
+    def validate_purpose(purpose: InspectionPurpose) -> None:
+        """
+        Run complete purpose validation pipeline.
+        
+        Validates in order:
+        1. Not empty (description and inspection_type)
+        2. Description length requirements
+        
+        Args:
+            purpose: InspectionPurpose instance
+            
+        Raises:
+            InputValidationError: If any validation step fails
+        """
+        # Step 1: Check not empty
+        PurposeValidator.validate_not_empty(purpose)
+        
+        # Step 2: Check description length
+        PurposeValidator.validate_description_length(purpose.description)
