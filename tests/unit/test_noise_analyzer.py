@@ -19,9 +19,8 @@ class TestNoiseAnalyzer:
     
     def test_analyze_clean_image(self):
         """Test analysis of clean synthetic image."""
-        # Create image with clear edges (sharp/good quality)
-        image = np.zeros((100, 100), dtype=np.uint8)
-        image[20:80, 20:80] = 255  # White square with clear edges
+        # Create flat/uniform image (clean, low noise)
+        image = np.ones((100, 100), dtype=np.uint8) * 128
         
         result = self.analyzer.analyze(image)
         
@@ -32,11 +31,14 @@ class TestNoiseAnalyzer:
         assert isinstance(result.estimated_noise_std, float)
     
     def test_analyze_noisy_image(self):
-        """Test analysis of poor quality (blurry/flat) image."""
-        # Create flat image (poor quality, high "noise" in terms of lack of detail)
-        image = np.ones((100, 100), dtype=np.uint8) * 128
+        """Test analysis of noisy image."""
+        # Create noisy image with strong Gaussian noise
+        base = np.ones((100, 100), dtype=np.uint8) * 128
+        np.random.seed(42)  # For reproducible results
+        noise = np.random.normal(0, 50, base.shape)
+        noisy = np.clip(base.astype(float) + noise, 0, 255).astype(np.uint8)
         
-        result = self.analyzer.analyze(image)
+        result = self.analyzer.analyze(noisy)
         
         assert result.noise_level == NOISE_HIGH
         assert result.recommended_filter == "bilateral_filter"
@@ -91,9 +93,8 @@ class TestNoiseAnalyzer:
     
     def test_recommended_filter_low_noise(self):
         """Test filter recommendation for low noise."""
-        # Create sharp image with clear edges
-        image = np.zeros((100, 100), dtype=np.uint8)
-        image[20:80, 20:80] = 255  # White square with clear edges
+        # Create flat/uniform image (clean, low noise)
+        image = np.ones((100, 100), dtype=np.uint8) * 128
         
         result = self.analyzer.analyze(image)
         
@@ -102,10 +103,13 @@ class TestNoiseAnalyzer:
     
     def test_recommended_filter_high_noise(self):
         """Test filter recommendation for high noise."""
-        # Create flat image (poor quality)
-        image = np.ones((100, 100), dtype=np.uint8) * 128
+        # Create very noisy image
+        base = np.ones((100, 100), dtype=np.uint8) * 128
+        np.random.seed(42)
+        noise = np.random.normal(0, 60, base.shape)
+        noisy = np.clip(base.astype(float) + noise, 0, 255).astype(np.uint8)
         
-        result = self.analyzer.analyze(image)
+        result = self.analyzer.analyze(noisy)
         
         if result.noise_level == NOISE_HIGH:
             assert result.recommended_filter == "bilateral_filter"
@@ -236,23 +240,25 @@ class TestNoiseAnalyzer:
         # We test the boundary cases by checking the classification logic
         
         # Create images that should result in different noise levels
-        # Sharp image with edges (should be LOW noise - good quality)
-        sharp_image = np.zeros((100, 100), dtype=np.uint8)
-        sharp_image[20:80, 20:80] = 255  # White square with clear edges
-        
-        # Flat image (should be HIGH noise - poor quality due to lack of detail)
+        # Flat image (should be LOW noise - clean/uniform)
         flat_image = np.ones((100, 100), dtype=np.uint8) * 128
         
-        sharp_result = self.analyzer.analyze(sharp_image)
+        # Very noisy image (should be HIGH noise)
+        base = np.ones((100, 100), dtype=np.uint8) * 128
+        np.random.seed(42)
+        noise = np.random.normal(0, 80, base.shape)
+        very_noisy = np.clip(base.astype(float) + noise, 0, 255).astype(np.uint8)
+        
         flat_result = self.analyzer.analyze(flat_image)
+        noisy_result = self.analyzer.analyze(very_noisy)
         
-        # Sharp image should have low noise (good quality)
-        assert sharp_result.noise_level == NOISE_LOW
-        assert sharp_result.laplacian_variance >= 500
-        
-        # Flat image should have high noise (poor quality)
-        assert flat_result.noise_level == NOISE_HIGH
+        # Flat image should have low noise (clean/uniform)
+        assert flat_result.noise_level == NOISE_LOW
         assert flat_result.laplacian_variance < 100
+        
+        # Very noisy image should have high noise
+        assert noisy_result.noise_level == NOISE_HIGH
+        assert noisy_result.laplacian_variance >= 500
     
     def test_estimated_noise_std_positive(self):
         """Test that estimated noise std is non-negative."""

@@ -68,10 +68,11 @@ class NoiseAnalyzer:
             snr_db = float(10 * np.log10(signal_power / noise_power))
         
         # 4. Classify noise level based on Laplacian variance
-        # Higher variance means more edges/detail, lower variance means smoother (higher noise)
-        if laplacian_variance >= 500:
+        # Low variance = flat/uniform = clean (NOISE_LOW)
+        # High variance = noisy/textured = noisy (NOISE_HIGH)
+        if laplacian_variance < 100:
             noise_level = NOISE_LOW
-        elif laplacian_variance >= 100:
+        elif laplacian_variance < 500:
             noise_level = NOISE_MEDIUM
         else:
             noise_level = NOISE_HIGH
