@@ -21,6 +21,7 @@ class PageID(Enum):
     DASHBOARD = "dashboard"
     UPLOAD = "upload"
     ROI = "roi"
+    PURPOSE = "purpose"
     ANALYSIS = "analysis"
     RESULTS = "results"
     SETTINGS = "settings"
@@ -220,6 +221,7 @@ class ArgosSidebar(QFrame):
             (PageID.DASHBOARD, "📊", "대시보드"),
             (PageID.UPLOAD, "📁", "이미지 업로드"),
             (PageID.ROI, "✂️", "ROI 설정"),
+            (PageID.PURPOSE, "🎯", "검사 목적"),
             (PageID.ANALYSIS, "▶️", "분석 실행"),
             (PageID.RESULTS, "📋", "결과 보기"),
             (PageID.SETTINGS, "⚙️", "설정"),

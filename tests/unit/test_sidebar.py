@@ -72,15 +72,15 @@ class TestArgosSidebar:
         assert sidebar.width() == 220
         assert sidebar.maximumWidth() == 220
         
-    def test_sidebar_has_six_menu_items(self, sidebar):
-        """Test that sidebar contains 6 SidebarMenuItem instances."""
+    def test_sidebar_has_seven_menu_items(self, sidebar):
+        """Test that sidebar contains 7 SidebarMenuItem instances."""
         menu_items = sidebar.findChildren(SidebarMenuItem)
-        assert len(menu_items) == 6
+        assert len(menu_items) == 7
         
         # Verify all expected page IDs are present
         page_ids = {item.page_id for item in menu_items}
         expected_page_ids = {
-            PageID.DASHBOARD, PageID.UPLOAD, PageID.ROI,
+            PageID.DASHBOARD, PageID.UPLOAD, PageID.ROI, PageID.PURPOSE,
             PageID.ANALYSIS, PageID.RESULTS, PageID.SETTINGS
         }
         assert page_ids == expected_page_ids

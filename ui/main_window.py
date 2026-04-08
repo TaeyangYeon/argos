@@ -23,6 +23,7 @@ from ui.components.sidebar import ArgosSidebar, PageID
 from ui.pages.dashboard_page import DashboardPage
 from ui.pages.upload_page import UploadPage
 from ui.pages.roi_page import ROIPage
+from ui.pages.purpose_page import PurposePage
 from ui.pages.analysis_page import AnalysisPage
 from ui.pages.result_page import ResultPage
 from ui.pages.settings_page import SettingsPage
@@ -46,6 +47,9 @@ class MainWindow(QMainWindow):
         self.key_manager = KeyManager()
         self.image_store = ImageStore()
         self.provider_factory = ProviderFactory()
+        
+        # Store for inspection purpose
+        self._inspection_purpose = None
         
         self._setup_window()
         self._setup_toolbar()
@@ -108,6 +112,7 @@ class MainWindow(QMainWindow):
             PageID.DASHBOARD: DashboardPage(self.image_store, self.key_manager),
             PageID.UPLOAD: UploadPage(self.image_store),
             PageID.ROI: ROIPage(self.image_store),
+            PageID.PURPOSE: PurposePage(),
             PageID.ANALYSIS: AnalysisPage(),
             PageID.RESULTS: ResultPage(),
             PageID.SETTINGS: SettingsPage(),
@@ -115,7 +120,7 @@ class MainWindow(QMainWindow):
         
         # Add pages to content area in PageID order
         for page_id in [PageID.DASHBOARD, PageID.UPLOAD, PageID.ROI, 
-                       PageID.ANALYSIS, PageID.RESULTS, PageID.SETTINGS]:
+                       PageID.PURPOSE, PageID.ANALYSIS, PageID.RESULTS, PageID.SETTINGS]:
             self._content_area.addWidget(self._pages[page_id])
             
         # Connect sidebar navigation signal
@@ -128,6 +133,9 @@ class MainWindow(QMainWindow):
         self._pages[PageID.ROI].navigate_requested.connect(
             lambda page_id: self._sidebar.navigate_to(PageID(page_id))
         )
+        
+        # Connect purpose page signals
+        self._pages[PageID.PURPOSE].purpose_confirmed.connect(self._on_purpose_confirmed)
         
         # Set initial page to dashboard
         self._sidebar.navigate_to(PageID.DASHBOARD)
@@ -147,6 +155,16 @@ class MainWindow(QMainWindow):
                 self._logger.info(f"Switched to page: {page_id.value}")
         else:
             self._logger.error(f"Unknown page ID: {page_id}")
+            
+    def _on_purpose_confirmed(self, purpose) -> None:
+        """
+        Handle inspection purpose confirmation.
+        
+        Args:
+            purpose: The confirmed InspectionPurpose object
+        """
+        self._inspection_purpose = purpose
+        self._logger.info(f"Inspection purpose confirmed: {purpose.inspection_type}")
         
     def _setup_status_bar(self) -> None:
         """Setup the status bar with version info."""
