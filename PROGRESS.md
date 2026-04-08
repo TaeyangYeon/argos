@@ -3,8 +3,8 @@
 마지막 업데이트: 2026-04-08
 
 ## 전체 진행률
-- 완료: 16 / 50 Steps
-- 현재 Phase: Phase 3 — Feature 분석 엔진 (대기)
+- 완료: 17 / 50 Steps
+- 현재 Phase: Phase 3 — Feature 분석 엔진 (진행 중)
 
 ---
 
@@ -14,7 +14,7 @@
 |-------|------|------|
 | Phase 1 | Step 1~8 — 프로젝트 기반 구축 | ✅ 완료 |
 | Phase 2 | Step 9~16 — UI 기본 골격 | ✅ 완료 |
-| Phase 3 | Step 17~24 — Feature 분석 엔진 | 🔲 대기 |
+| Phase 3 | Step 17~24 — Feature 분석 엔진 | 🔄 진행 중 |
 | Phase 4 | Step 25~31 — Align 엔진 | 🔲 대기 |
 | Phase 5 | Step 32~41 — Inspection 엔진 | 🔲 대기 |
 | Phase 6 | Step 42~46 — 결과 뷰어 및 출력 | 🔲 대기 |
@@ -42,7 +42,7 @@
 | 14 | 이미지 썸네일 그리드 및 관리 | ✅ 완료 | 2026-04-07 | FlowLayout, ThumbnailCard, ThumbnailGrid, ImageViewerDialog, 필터링 |
 | 15 | ROI 설정 화면 | ✅ 완료 | 2026-04-07 | ROICanvas, ROIControls, ROIPage 구현 완료. 마우스 드래그 선택, 좌표 동기화, 검증 |
 | 16 | 설정 화면 | ✅ 완료 | 2026-04-08 | SectionCard, 슬라이더 동기화, 검증, 영속성 구현 완료 |
-| 17 | 이미지 로드 및 전처리 유틸리티 | 🔲 대기 | - | |
+| 17 | 이미지 로드 및 전처리 유틸리티 | ✅ 완료 | 2026-04-08 | ImageLoader, ImagePreprocessor 구현 완료. 메서드 체이닝, 파이프라인 추적 |
 | 18 | 히스토그램 및 밝기 분석 | 🔲 대기 | - | |
 | 19 | 노이즈 수준 분석 | 🔲 대기 | - | |
 | 20 | 에지 강도 분석 | 🔲 대기 | - | |
