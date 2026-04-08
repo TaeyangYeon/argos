@@ -82,8 +82,8 @@ class SettingsPage(BasePage):
         scroll_area.setWidget(content_widget)
         layout.addWidget(scroll_area)
         
-        # Toast notifications
-        self._toast = ToastMessage(self)
+        # Toast notifications - will be created when first needed
+        self._toast = None
         
     def _create_analysis_section(self, parent_layout: QVBoxLayout) -> None:
         """Create analysis criteria section."""
@@ -397,16 +397,16 @@ class SettingsPage(BasePage):
             self._is_dirty = False
             self._update_title()
             
-            if self._toast:
-                self._toast.show_success("설정이 저장되었습니다.")
+            self._ensure_toast()
+            self._show_toast_with_manual_positioning("설정이 저장되었습니다.", "success")
             self.settings_saved.emit(current_settings)
             
         except ValueError as e:
-            if self._toast:
-                self._toast.show_error(f"설정 검증 실패: {str(e)}")
+            self._ensure_toast()
+            self._show_toast_with_manual_positioning(f"설정 검증 실패: {str(e)}", "error")
         except Exception as e:
-            if self._toast:
-                self._toast.show_error(f"저장 실패: {str(e)}")
+            self._ensure_toast()
+            self._show_toast_with_manual_positioning(f"저장 실패: {str(e)}", "error")
             
     def _reset_to_defaults(self) -> None:
         """Reset all settings to defaults."""
@@ -424,10 +424,11 @@ class SettingsPage(BasePage):
             self._is_dirty = True
             self._update_title()
             
-            if self._toast:
-                self._toast.show_warning(
-                    "기본값으로 초기화되었습니다. 저장하려면 💾 저장을 클릭하세요."
-                )
+            self._ensure_toast()
+            self._show_toast_with_manual_positioning(
+                "기본값으로 초기화되었습니다. 저장하려면 💾 저장을 클릭하세요.", 
+                "warning"
+            )
             
     def load_settings(self) -> None:
         """Load settings from file and update UI."""
@@ -446,8 +447,8 @@ class SettingsPage(BasePage):
             self._load_settings_to_ui(self._settings)
             self._is_dirty = False
             self._update_title()
-            if self._toast:
-                self._toast.show_error(f"설정 로딩 실패, 기본값 사용: {str(e)}")
+            self._ensure_toast()
+            self._show_toast_with_manual_positioning(f"설정 로딩 실패, 기본값 사용: {str(e)}", "error")
             
     def _load_settings_to_ui(self, settings: Settings) -> None:
         """Load settings values into UI widgets."""
@@ -516,6 +517,38 @@ class SettingsPage(BasePage):
             output_dir=self._output_dir_edit.text()
         )
         
+    def _ensure_toast(self) -> None:
+        """Ensure toast is created with proper parent."""
+        if self._toast is None:
+            # Create toast with this widget as parent, but we'll handle positioning manually
+            self._toast = ToastMessage(self)
+            
+    def _show_toast_with_manual_positioning(self, message: str, toast_type: str) -> None:
+        """Show toast with manual positioning to work around positioning bugs."""
+        # Call the appropriate show method
+        if toast_type == "success":
+            self._toast.show_success(message)
+        elif toast_type == "error":
+            self._toast.show_error(message)
+        elif toast_type == "warning":
+            self._toast.show_warning(message)
+        
+        # Manual positioning - position relative to main window
+        main_window = self.window()
+        if main_window and main_window != self:
+            # Get main window geometry
+            main_rect = main_window.geometry()
+            
+            # Ensure toast has calculated its size
+            self._toast.adjustSize()
+            toast_size = self._toast.size()
+            
+            # Position at bottom-right of main window
+            x = main_rect.x() + main_rect.width() - toast_size.width() - 20
+            y = main_rect.y() + main_rect.height() - toast_size.height() - 20
+            
+            self._toast.move(x, y)
+            
     def showEvent(self, event) -> None:
         """Handle show event to load settings if not dirty."""
         super().showEvent(event)
