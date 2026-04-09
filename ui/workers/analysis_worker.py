@@ -62,6 +62,14 @@ class AnalysisWorker(QThread):
         try:
             self.log_message.emit("INFO", "분석을 시작합니다")
             
+            # Basic validation: ensure we have at least some images to work with
+            all_images = self.image_store.get_all()
+            if not all_images:
+                error_msg = "분석할 이미지가 없습니다"
+                self.log_message.emit("ERROR", error_msg)
+                self.analysis_failed.emit(error_msg)
+                return
+            
             # Step 1: Feature Analysis
             if not self._execute_feature_analysis():
                 return

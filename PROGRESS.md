@@ -93,6 +93,7 @@
 | 2026-04-09 | 26 | [근본해결] StatCard 위젯 렌더링 버그 완전 해결 — StatCard를 제거하고 plain QLabel로 교체. 모든 paint engine 오류 제거, 히스토그램 값 정상 표시 확인 |
 | 2026-04-09 | 26 | [시그널 플로우 검증] analysis_complete 신호 체인 정상 확인 — [TRACE-1→2→3→4] 모든 단계 통과. 신호 연결 문제가 아닌 UI 렌더링 문제였음 확인. StatCard→QLabel 교체가 정답 |
 | 2026-04-09 | 26 | [버그] OK/NG 분리도 0% — worker가 analyze_ok_ng_separation() 미호출. Insp OK/NG 이미지 배열 로드 후 호출하도록 수정. 분리도 45.1% 정상 계산 확인 |
+| 2026-04-09 | 26 | [버그6] Pre-flight 검증 로직 오류 — 검사 유형에 상관없이 모든 이미지 타입(ALIGN_OK/INSP_OK/INSP_NG) 요구. InspectionPurpose.inspection_type 기반 vision-type-aware 검증으로 수정. Align-only("위치정렬")→ALIGN_OK만, Inspection-only→OK+NG, 혼합→전부 필요 |
 
 ---
 

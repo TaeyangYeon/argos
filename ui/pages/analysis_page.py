@@ -316,11 +316,14 @@ class AnalysisPage(BasePage):
         purpose_valid = (self.inspection_purpose is not None and 
                         self.inspection_purpose.inspection_type.strip() != "")
         
-        # Pre-flight 상태 리스트
+        # Vision type 기반 이미지 요구사항 확인
+        image_validation_result = self._validate_images_for_vision_type(align_count, ok_count, ng_count)
+        
+        # Pre-flight 상태 리스트 (vision type aware)
         checks = [
-            (align_count > 0, f"Align OK 이미지", f"{align_count}장"),
-            (ok_count > 0, f"Insp OK 이미지", f"{ok_count}장"),
-            (ng_count > 0, f"Insp NG 이미지", f"{ng_count}장"),
+            (image_validation_result["align_valid"], f"Align OK 이미지", f"{align_count}장"),
+            (image_validation_result["ok_valid"], f"Insp OK 이미지", f"{ok_count}장"),
+            (image_validation_result["ng_valid"], f"Insp NG 이미지", f"{ng_count}장"),
             (roi_valid, "ROI 설정", "완료"),
             (purpose_valid, "검사 목적", "완료")
         ]
@@ -336,8 +339,90 @@ class AnalysisPage(BasePage):
             
             self.preflight_rows[i].setText(text)
         
+        # Vision type별 에러 메시지 표시
+        if not image_validation_result["overall_valid"] and purpose_valid:
+            error_msg = self._get_image_validation_error_message()
+            self.preflight_rows[0].setText(f"❌ 이미지 검증 실패: {error_msg}")
+        
         # 시작 버튼 활성화 상태 업데이트
         self.start_button.setEnabled(all_ready and self.analysis_worker is None)
+    
+    def _validate_images_for_vision_type(self, align_count: int, ok_count: int, ng_count: int) -> dict:
+        """
+        Vision type에 따른 이미지 유효성 검사
+        
+        Args:
+            align_count: ALIGN_OK 이미지 수
+            ok_count: INSPECTION_OK 이미지 수  
+            ng_count: INSPECTION_NG 이미지 수
+            
+        Returns:
+            검증 결과 딕셔너리
+        """
+        if not self.inspection_purpose:
+            return {
+                "align_valid": True, "ok_valid": True, "ng_valid": True, 
+                "overall_valid": False
+            }
+        
+        inspection_type = self.inspection_purpose.inspection_type.strip()
+        
+        # Vision type 결정
+        is_align_only = inspection_type == "위치정렬"
+        is_inspection_only = inspection_type in ["치수측정", "결함검출", "형상검사", "기타"]
+        is_mixed = False  # 현재 UI에서는 혼합 모드 설정 불가능하므로 False
+        
+        if is_align_only:
+            # ALIGN only: ALIGN_OK ≥ 1 필요
+            return {
+                "align_valid": align_count > 0,
+                "ok_valid": True,  # 불필요하므로 항상 valid
+                "ng_valid": True,  # 불필요하므로 항상 valid
+                "overall_valid": align_count > 0
+            }
+        elif is_inspection_only:
+            # INSPECTION only: INSP_OK ≥ 1 AND INSP_NG ≥ 1 필요
+            return {
+                "align_valid": True,  # 불필요하므로 항상 valid
+                "ok_valid": ok_count > 0,
+                "ng_valid": ng_count > 0,
+                "overall_valid": ok_count > 0 and ng_count > 0
+            }
+        elif is_mixed:
+            # ALIGN + INSPECTION: 모든 이미지 필요
+            return {
+                "align_valid": align_count > 0,
+                "ok_valid": ok_count > 0,
+                "ng_valid": ng_count > 0,
+                "overall_valid": align_count > 0 and ok_count > 0 and ng_count > 0
+            }
+        else:
+            # 알 수 없는 타입: 모든 이미지 필요 (기존 동작 유지)
+            return {
+                "align_valid": align_count > 0,
+                "ok_valid": ok_count > 0,
+                "ng_valid": ng_count > 0,
+                "overall_valid": align_count > 0 and ok_count > 0 and ng_count > 0
+            }
+    
+    def _get_image_validation_error_message(self) -> str:
+        """
+        Vision type별 이미지 검증 에러 메시지 반환
+        
+        Returns:
+            에러 메시지
+        """
+        if not self.inspection_purpose:
+            return "검사 목적이 설정되지 않았습니다."
+        
+        inspection_type = self.inspection_purpose.inspection_type.strip()
+        
+        if inspection_type == "위치정렬":
+            return "Align 분석: ALIGN_OK 이미지가 필요합니다."
+        elif inspection_type in ["치수측정", "결함검출", "형상검사", "기타"]:
+            return "Inspection 분석: OK 및 NG 이미지가 모두 필요합니다."
+        else:
+            return "알 수 없는 검사 유형: 모든 이미지가 필요합니다."
     
     def set_roi_config(self, roi_config: ROIConfig):
         """
