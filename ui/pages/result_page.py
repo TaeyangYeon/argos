@@ -23,6 +23,9 @@ class FeatureTab(QWidget):
     
     def __init__(self, parent=None):
         """Initialize the feature analysis tab."""
+        self._mean_label = None
+        self._std_label = None
+        self._range_label = None
         super().__init__(parent)
         self._setup_ui()
         
@@ -119,11 +122,10 @@ class FeatureTab(QWidget):
                 border: 1px solid #2A2A4A;
                 border-left: 4px solid #1E88E5;
                 border-radius: 8px;
-                padding: 12px;
-                min-width: 160px;
-                max-height: 100px;
+                min-width: 180px;
             }
         """)
+        container.setContentsMargins(12, 12, 12, 12)
         
         layout = QVBoxLayout(container)
         layout.setSpacing(4)
@@ -402,9 +404,15 @@ class FeatureTab(QWidget):
         range_value = str(dynamic_range) if dynamic_range is not None else "—"
         
         # Update histogram QLabel widgets directly
-        self._mean_label.setText(mean_value)
-        self._std_label.setText(std_value)
-        self._range_label.setText(range_value)
+        # self._mean_label.setText(mean_value)
+        # self._std_label.setText(std_value)
+        # self._range_label.setText(range_value)
+        if self._mean_label:
+            self._mean_label.setText(mean_value)
+        if self._std_label:
+            self._std_label.setText(std_value)
+        if self._range_label:
+            self._range_label.setText(range_value)
         
         # Update noise level badge with case normalization
         noise_level = getattr(result.noise, 'noise_level', 'Low')
@@ -593,7 +601,7 @@ class ResultPage(BasePage):
             result: The FullFeatureAnalysis result to display
         """
         self._pending_result = result
-        QTimer.singleShot(0, self._apply_result)
+        self._apply_result()
         
     def _apply_result(self) -> None:
         """Apply the pending result data to UI components."""

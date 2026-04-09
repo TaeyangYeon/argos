@@ -430,8 +430,8 @@ class AnalysisPage(BasePage):
         self.result_button.setEnabled(True)
         
         # 시그널 발생 (페이지 전환 먼저, 데이터 로딩 나중)
-        self.navigate_to_result.emit()  # 페이지 전환 먼저
         self.analysis_complete.emit(result)  # 데이터 로딩 나중
+        self.navigate_to_result.emit()  # 페이지 전환 먼저
     
     def on_analysis_failed(self, error_message: str):
         """분석 실패 처리"""

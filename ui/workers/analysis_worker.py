@@ -6,7 +6,7 @@
 import time
 from PyQt6.QtCore import QThread, pyqtSignal
 
-from core.image_store import ImageStore
+from core.image_store import ImageStore, ImageType
 from core.models import ROIConfig, InspectionPurpose
 from core.analyzers.feature_analyzer import FeatureAnalyzer, FullFeatureAnalysis
 from ui.components.progress_steps import AnalysisStep
@@ -135,6 +135,26 @@ class AnalysisWorker(QThread):
             # FeatureAnalyzer를 사용하여 전체 특성 분석 수행
             analyzer = FeatureAnalyzer()
             self.feature_result = analyzer.analyze_full(image_array, first_image_meta.file_path)
+            
+            # OK/NG 분리도 분석 (OK와 NG 이미지가 모두 있는 경우)
+            ok_images_meta = self.image_store.get_all(ImageType.INSPECTION_OK)
+            ng_images_meta = self.image_store.get_all(ImageType.INSPECTION_NG)
+            
+            if ok_images_meta and ng_images_meta:
+                self.log_message.emit("INFO", f"OK/NG 분리도 분석 중: OK {len(ok_images_meta)}장, NG {len(ng_images_meta)}장")
+                
+                # Load image arrays
+                ok_arrays = [self.image_store.load_image(meta.id) for meta in ok_images_meta]
+                ng_arrays = [self.image_store.load_image(meta.id) for meta in ng_images_meta]
+                
+                # Analyze separation
+                separation = analyzer.analyze_ok_ng_separation(ok_arrays, ng_arrays)
+                self.feature_result.histogram.separation_score = separation["separation_score"]
+                
+                print(f"[SEPARATION] score: {separation['separation_score']}", flush=True)
+                self.log_message.emit("INFO", f"분리도 점수: {separation['separation_score']:.1f}%")
+            else:
+                self.log_message.emit("INFO", "OK 또는 NG 이미지가 없어 분리도 분석을 건너뜁니다")
             
             elapsed_time = time.time() - start_time
             self.step_finished.emit(step_name, elapsed_time)

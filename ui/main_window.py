@@ -232,7 +232,6 @@ class MainWindow(QMainWindow):
             connected: Whether AI provider is connected
             provider_name: Name of the connected AI provider
         """
-        self._logger.debug(f"Connection status updated: connected={connected}, provider={provider_name}")
         
     def get_content_area(self) -> QStackedWidget:
         """

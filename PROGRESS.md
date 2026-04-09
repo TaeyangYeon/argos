@@ -91,6 +91,8 @@
 | 2026-04-09 | 26 | [최종해결] 히스토그램 카드 UI 완전 수정 — QLabel 레벨 repaint() 누락으로 위젯 갱신 실패 → _value_label.repaint() 직접 호출로 강제 새로고침 |
 | 2026-04-09 | 26 | [최종해결] 실제 앱에서 히스토그램 카드 미표시 — load_result() 호출 시점이 위젯 렌더링 전임. QTimer.singleShot(0) 지연 호출 + 자동 페이지 전환으로 해결 |
 | 2026-04-09 | 26 | [근본해결] StatCard 위젯 렌더링 버그 완전 해결 — StatCard를 제거하고 plain QLabel로 교체. 모든 paint engine 오류 제거, 히스토그램 값 정상 표시 확인 |
+| 2026-04-09 | 26 | [시그널 플로우 검증] analysis_complete 신호 체인 정상 확인 — [TRACE-1→2→3→4] 모든 단계 통과. 신호 연결 문제가 아닌 UI 렌더링 문제였음 확인. StatCard→QLabel 교체가 정답 |
+| 2026-04-09 | 26 | [버그] OK/NG 분리도 0% — worker가 analyze_ok_ng_separation() 미호출. Insp OK/NG 이미지 배열 로드 후 호출하도록 수정. 분리도 45.1% 정상 계산 확인 |
 
 ---
 
