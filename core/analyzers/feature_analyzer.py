@@ -6,7 +6,7 @@ and shape analysis results into a unified summary suitable for AI provider input
 """
 
 import json
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from pathlib import Path
 from typing import Optional
@@ -36,7 +36,9 @@ class FullFeatureAnalysis:
     shape: ShapeAnalysisResult
     summary: FeatureAnalysisSummary
     ai_prompt: str
-    analyzed_at: str   # ISO datetime string
+    ai_summary: str = "AI 분석을 사용할 수 없습니다."
+    preprocessing_recommendations: list[str] = field(default_factory=list)
+    analyzed_at: str = field(default_factory=lambda: datetime.utcnow().isoformat() + "Z")
 
 
 class FeatureAnalyzer(IFeatureAnalyzer):
@@ -173,6 +175,11 @@ class FeatureAnalyzer(IFeatureAnalyzer):
         else:
             ai_summary = "AI 분석을 사용할 수 없습니다."
         
+        # Generate preprocessing recommendations based on analysis results
+        preprocessing_recommendations = self._generate_preprocessing_recommendations(
+            histogram_result, noise_result, edge_result, shape_result
+        )
+        
         # Build unified summary
         summary = FeatureAnalysisSummary(
             mean_gray=histogram_result.mean_gray,
@@ -198,7 +205,8 @@ class FeatureAnalyzer(IFeatureAnalyzer):
             shape=shape_result,
             summary=summary,
             ai_prompt=ai_prompt,
-            analyzed_at=datetime.utcnow().isoformat() + "Z"
+            ai_summary=ai_summary,
+            preprocessing_recommendations=preprocessing_recommendations
         )
         
         return full_analysis
@@ -350,3 +358,50 @@ Shape Analysis:
 Provide analysis summary in Korean:"""
         
         return prompt
+    
+    def _generate_preprocessing_recommendations(self, histogram: HistogramAnalysisResult,
+                                              noise: NoiseAnalysisResult,
+                                              edge: EdgeAnalysisResult,
+                                              shape: ShapeAnalysisResult) -> list[str]:
+        """
+        Generate preprocessing recommendations based on analysis results.
+        
+        Args:
+            histogram: Histogram analysis result
+            noise: Noise analysis result
+            edge: Edge analysis result
+            shape: Shape analysis result
+            
+        Returns:
+            List of preprocessing recommendation strings
+        """
+        recommendations = []
+        
+        # Noise-based recommendations
+        if noise.noise_level == "HIGH":
+            recommendations.append(f"노이즈 제거 권장: {noise.recommended_filter}")
+        elif noise.noise_level == "MEDIUM":
+            recommendations.append("보통 수준 노이즈 - 필터링 고려")
+        
+        # Brightness/contrast recommendations
+        if histogram.dynamic_range < 100:
+            recommendations.append("동적 범위 낮음 - 히스토그램 평활화 권장")
+        elif histogram.mean_gray < 50:
+            recommendations.append("이미지 어둠 - 밝기 조정 권장")
+        elif histogram.mean_gray > 200:
+            recommendations.append("이미지 밝음 - 노출 조정 권장")
+        
+        # Edge enhancement recommendations
+        if edge.mean_edge_strength < 30:
+            recommendations.append("에지 약함 - 언샵 마스크 또는 에지 강화 권장")
+        
+        # Shape-based recommendations
+        if shape.blob_count > 100:
+            recommendations.append("많은 blob 검출 - 모폴로지 연산으로 정리 권장")
+        elif shape.blob_count == 0:
+            recommendations.append("blob 미검출 - 임계값 조정 또는 전처리 필요")
+        
+        if not recommendations:
+            recommendations.append("현재 이미지 품질 양호 - 추가 전처리 불필요")
+        
+        return recommendations

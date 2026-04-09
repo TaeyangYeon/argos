@@ -142,6 +142,9 @@ class MainWindow(QMainWindow):
         self._pages[PageID.ANALYSIS].navigate_to_result.connect(
             lambda: self._sidebar.navigate_to(PageID.RESULTS)
         )
+        self._pages[PageID.ANALYSIS].analysis_complete.connect(
+            self._pages[PageID.RESULTS].load_result
+        )
         
         # Connect ROI page signals to update analysis page
         self._pages[PageID.ROI].roi_confirmed.connect(self._on_roi_confirmed)

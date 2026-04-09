@@ -1,15 +1,450 @@
-"""
-Results viewing page for the Argos vision algorithm design application.
+"""Results viewing page for the Argos vision algorithm design application.
 
 This module provides the interface for viewing analysis results,
 algorithm parameters, and performance metrics.
 """
 
-from PyQt6.QtWidgets import QVBoxLayout, QLabel
+from PyQt6.QtWidgets import (
+    QVBoxLayout, QHBoxLayout, QLabel, QTabWidget, QWidget, QScrollArea,
+    QTextEdit, QProgressBar, QFrame, QListWidget, QListWidgetItem
+)
 from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QFont
 
 from .base_page import BasePage, PageHeader
 from ui.components.sidebar import PageID
+from ui.components.stat_card import StatCard
+from core.analyzers.feature_analyzer import FullFeatureAnalysis
+
+
+class FeatureTab(QWidget):
+    """
+    Feature analysis tab showing comprehensive image analysis results.
+    """
+    
+    def __init__(self, parent=None):
+        """Initialize the feature analysis tab."""
+        super().__init__(parent)
+        self._setup_ui()
+        
+    def _setup_ui(self) -> None:
+        """Setup the feature tab UI."""
+        # Main scroll area
+        scroll_area = QScrollArea()
+        scroll_area.setWidgetResizable(True)
+        scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        
+        # Main content widget
+        content_widget = QWidget()
+        content_layout = QVBoxLayout(content_widget)
+        content_layout.setContentsMargins(24, 24, 24, 24)
+        content_layout.setSpacing(24)
+        
+        # Histogram stats section
+        histogram_section = self._create_histogram_section()
+        content_layout.addWidget(histogram_section)
+        
+        # Noise and edge analysis section
+        analysis_section = self._create_analysis_section()
+        content_layout.addWidget(analysis_section)
+        
+        # Shape and blob analysis section
+        shape_section = self._create_shape_section()
+        content_layout.addWidget(shape_section)
+        
+        # OK/NG separation section
+        separation_section = self._create_separation_section()
+        content_layout.addWidget(separation_section)
+        
+        # AI analysis section
+        ai_section = self._create_ai_section()
+        content_layout.addWidget(ai_section)
+        
+        # Preprocessing recommendations section
+        recommendations_section = self._create_recommendations_section()
+        content_layout.addWidget(recommendations_section)
+        
+        # Add stretch at bottom
+        content_layout.addStretch()
+        
+        scroll_area.setWidget(content_widget)
+        
+        # Main layout
+        layout = QVBoxLayout(self)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.addWidget(scroll_area)
+        
+    def _create_histogram_section(self) -> QWidget:
+        """Create histogram statistics section."""
+        section = QFrame()
+        section.setFrameShape(QFrame.Shape.Box)
+        section.setStyleSheet("""
+            QFrame {
+                background-color: #16213E;
+                border: 1px solid #2A2A4A;
+                border-radius: 8px;
+                padding: 16px;
+            }
+        """)
+        
+        layout = QVBoxLayout(section)
+        
+        # Section title
+        title = QLabel("히스토그램 특성")
+        title.setStyleSheet("color: #E0E0E0; font-size: 16px; font-weight: bold; margin-bottom: 12px;")
+        layout.addWidget(title)
+        
+        # Stats cards container
+        stats_layout = QHBoxLayout()
+        
+        # Create stat cards (will be populated by load_result)
+        self._mean_card = StatCard("평균 밝기", "--", "0-255 범위")
+        self._std_card = StatCard("표준편차", "--", "분산도 측정")
+        self._range_card = StatCard("동적 범위", "--", "대비 수준")
+        
+        stats_layout.addWidget(self._mean_card)
+        stats_layout.addWidget(self._std_card)
+        stats_layout.addWidget(self._range_card)
+        stats_layout.addStretch()
+        
+        layout.addLayout(stats_layout)
+        
+        return section
+        
+    def _create_analysis_section(self) -> QWidget:
+        """Create noise and edge analysis section."""
+        section = QFrame()
+        section.setFrameShape(QFrame.Shape.Box)
+        section.setStyleSheet("""
+            QFrame {
+                background-color: #16213E;
+                border: 1px solid #2A2A4A;
+                border-radius: 8px;
+                padding: 16px;
+            }
+        """)
+        
+        layout = QVBoxLayout(section)
+        
+        # Section title
+        title = QLabel("노이즈 및 에지 분석")
+        title.setStyleSheet("color: #E0E0E0; font-size: 16px; font-weight: bold; margin-bottom: 12px;")
+        layout.addWidget(title)
+        
+        # Analysis content
+        content_layout = QHBoxLayout()
+        
+        # Noise level badge
+        self._noise_badge = QLabel("노이즈: --")
+        self._noise_badge.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self._noise_badge.setFixedHeight(40)
+        self._noise_badge.setStyleSheet("""
+            QLabel {
+                background-color: #424242;
+                color: #E0E0E0;
+                border-radius: 20px;
+                padding: 8px 16px;
+                font-weight: bold;
+            }
+        """)
+        content_layout.addWidget(self._noise_badge)
+        
+        # Edge stats
+        edge_layout = QVBoxLayout()
+        
+        self._edge_strength_label = QLabel("에지 강도: --")
+        self._edge_strength_label.setStyleSheet("color: #E0E0E0;")
+        edge_layout.addWidget(self._edge_strength_label)
+        
+        self._edge_density_label = QLabel("에지 밀도: --")
+        self._edge_density_label.setStyleSheet("color: #E0E0E0;")
+        edge_layout.addWidget(self._edge_density_label)
+        
+        content_layout.addLayout(edge_layout)
+        
+        # Caliper suitability badge
+        self._caliper_badge = QLabel("캘리퍼: --")
+        self._caliper_badge.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self._caliper_badge.setFixedHeight(40)
+        self._caliper_badge.setStyleSheet("""
+            QLabel {
+                background-color: #424242;
+                color: #E0E0E0;
+                border-radius: 20px;
+                padding: 8px 16px;
+                font-weight: bold;
+            }
+        """)
+        content_layout.addWidget(self._caliper_badge)
+        
+        content_layout.addStretch()
+        
+        layout.addLayout(content_layout)
+        
+        return section
+        
+    def _create_shape_section(self) -> QWidget:
+        """Create shape analysis section."""
+        section = QFrame()
+        section.setFrameShape(QFrame.Shape.Box)
+        section.setStyleSheet("""
+            QFrame {
+                background-color: #16213E;
+                border: 1px solid #2A2A4A;
+                border-radius: 8px;
+                padding: 16px;
+            }
+        """)
+        
+        layout = QVBoxLayout(section)
+        
+        # Section title
+        title = QLabel("형상 및 Blob 분석")
+        title.setStyleSheet("color: #E0E0E0; font-size: 16px; font-weight: bold; margin-bottom: 12px;")
+        layout.addWidget(title)
+        
+        # Shape content
+        content_layout = QHBoxLayout()
+        
+        # Blob count
+        self._blob_count_label = QLabel("Blob 수: --")
+        self._blob_count_label.setStyleSheet("color: #E0E0E0; font-size: 14px;")
+        content_layout.addWidget(self._blob_count_label)
+        
+        # Circular structure flag
+        self._circular_flag = QLabel("원형 구조: --")
+        self._circular_flag.setStyleSheet("color: #E0E0E0; font-size: 14px;")
+        content_layout.addWidget(self._circular_flag)
+        
+        content_layout.addStretch()
+        
+        layout.addLayout(content_layout)
+        
+        return section
+        
+    def _create_separation_section(self) -> QWidget:
+        """Create OK/NG separation section."""
+        section = QFrame()
+        section.setFrameShape(QFrame.Shape.Box)
+        section.setStyleSheet("""
+            QFrame {
+                background-color: #16213E;
+                border: 1px solid #2A2A4A;
+                border-radius: 8px;
+                padding: 16px;
+            }
+        """)
+        
+        layout = QVBoxLayout(section)
+        
+        # Section title
+        title = QLabel("OK/NG 분리도")
+        title.setStyleSheet("color: #E0E0E0; font-size: 16px; font-weight: bold; margin-bottom: 12px;")
+        layout.addWidget(title)
+        
+        # Progress bar for separation score
+        self._separation_progress = QProgressBar()
+        self._separation_progress.setRange(0, 100)
+        self._separation_progress.setValue(0)
+        self._separation_progress.setFixedHeight(30)
+        self._separation_progress.setStyleSheet("""
+            QProgressBar {
+                border: 2px solid #2A2A4A;
+                border-radius: 15px;
+                background-color: #1A1A2E;
+                text-align: center;
+                color: #E0E0E0;
+                font-weight: bold;
+            }
+            QProgressBar::chunk {
+                background-color: #1E88E5;
+                border-radius: 13px;
+            }
+        """)
+        layout.addWidget(self._separation_progress)
+        
+        return section
+        
+    def _create_ai_section(self) -> QWidget:
+        """Create AI analysis section."""
+        section = QFrame()
+        section.setFrameShape(QFrame.Shape.Box)
+        section.setStyleSheet("""
+            QFrame {
+                background-color: #16213E;
+                border: 1px solid #2A2A4A;
+                border-radius: 8px;
+                padding: 16px;
+            }
+        """)
+        
+        layout = QVBoxLayout(section)
+        
+        # Section title
+        title = QLabel("AI 분석 요약")
+        title.setStyleSheet("color: #E0E0E0; font-size: 16px; font-weight: bold; margin-bottom: 12px;")
+        layout.addWidget(title)
+        
+        # AI summary text area
+        self._ai_summary_text = QTextEdit()
+        self._ai_summary_text.setReadOnly(True)
+        self._ai_summary_text.setFixedHeight(120)
+        self._ai_summary_text.setStyleSheet("""
+            QTextEdit {
+                background-color: #1A1A2E;
+                border: 1px solid #2A2A4A;
+                border-radius: 6px;
+                color: #E0E0E0;
+                padding: 12px;
+                font-size: 13px;
+            }
+        """)
+        layout.addWidget(self._ai_summary_text)
+        
+        return section
+        
+    def _create_recommendations_section(self) -> QWidget:
+        """Create preprocessing recommendations section."""
+        section = QFrame()
+        section.setFrameShape(QFrame.Shape.Box)
+        section.setStyleSheet("""
+            QFrame {
+                background-color: #16213E;
+                border: 1px solid #2A2A4A;
+                border-radius: 8px;
+                padding: 16px;
+            }
+        """)
+        
+        layout = QVBoxLayout(section)
+        
+        # Section title
+        title = QLabel("전처리 권장사항")
+        title.setStyleSheet("color: #E0E0E0; font-size: 16px; font-weight: bold; margin-bottom: 12px;")
+        layout.addWidget(title)
+        
+        # Recommendations list
+        self._recommendations_list = QListWidget()
+        self._recommendations_list.setFixedHeight(120)
+        self._recommendations_list.setStyleSheet("""
+            QListWidget {
+                background-color: #1A1A2E;
+                border: 1px solid #2A2A4A;
+                border-radius: 6px;
+                color: #E0E0E0;
+                padding: 8px;
+            }
+            QListWidget::item {
+                padding: 6px;
+                border-bottom: 1px solid #2A2A4A;
+            }
+            QListWidget::item:last {
+                border-bottom: none;
+            }
+        """)
+        layout.addWidget(self._recommendations_list)
+        
+        return section
+        
+    def load_data(self, result: FullFeatureAnalysis) -> None:
+        """Load feature analysis data into the UI."""
+        # Debug logging to verify data flow
+        print(f"[DEBUG] load_result called: {type(result)}")
+        histogram = getattr(result, 'histogram', None)
+        print(f"[DEBUG] histogram result: {histogram}")
+        if histogram:
+            mean_field = getattr(histogram, 'mean_gray', 'FIELD_MISSING')
+            std_field = getattr(histogram, 'std_gray', 'FIELD_MISSING')
+            range_field = getattr(histogram, 'dynamic_range', 'FIELD_MISSING')
+            print(f"[DEBUG] mean_gray field: {mean_field}")
+            print(f"[DEBUG] std_gray field: {std_field}")
+            print(f"[DEBUG] dynamic_range field: {range_field}")
+        else:
+            print(f"[DEBUG] histogram is None or missing")
+        
+        # Update histogram stats with full defensive access
+        
+        mean_gray = getattr(histogram, 'mean_gray', None) if histogram else None
+        std_gray = getattr(histogram, 'std_gray', None) if histogram else None
+        dynamic_range = getattr(histogram, 'dynamic_range', None) if histogram else None
+        
+        self._mean_card.update_value(f"{mean_gray:.1f}" if mean_gray is not None else "—")
+        self._std_card.update_value(f"{std_gray:.1f}" if std_gray is not None else "—")
+        self._range_card.update_value(str(dynamic_range) if dynamic_range is not None else "—")
+        
+        # Update noise level badge with case normalization
+        noise_level = getattr(result.noise, 'noise_level', 'Low')
+        noise_level_upper = str(noise_level).upper()
+        self._noise_badge.setText(f"노이즈: {noise_level}")
+        
+        # Set badge color based on noise level (normalized to uppercase)
+        if noise_level_upper == "HIGH":
+            badge_color = "#F44336"  # Red
+        elif noise_level_upper == "MEDIUM":
+            badge_color = "#FF9800"  # Orange
+        else:
+            badge_color = "#4CAF50"  # Green
+            
+        self._noise_badge.setStyleSheet(f"""
+            QLabel {{
+                background-color: {badge_color};
+                color: #FFFFFF;
+                border-radius: 20px;
+                padding: 8px 16px;
+                font-weight: bold;
+            }}
+        """)
+        
+        # Update edge stats with defensive access
+        edge_strength = getattr(result.edge, 'mean_edge_strength', None)
+        edge_density = getattr(result.edge, 'edge_density', None)
+        
+        self._edge_strength_label.setText(f"에지 강도: {edge_strength:.1f}" if edge_strength is not None else "에지 강도: —")
+        self._edge_density_label.setText(f"에지 밀도: {edge_density:.4f}" if edge_density is not None else "에지 밀도: —")
+        
+        # Update caliper suitability badge with defensive access
+        caliper_suitable = getattr(result.edge, 'is_suitable_for_caliper', False)
+        self._caliper_badge.setText("캘리퍼: 적합" if caliper_suitable else "캘리퍼: 부적합")
+        caliper_color = "#1E88E5" if caliper_suitable else "#424242"
+        self._caliper_badge.setStyleSheet(f"""
+            QLabel {{
+                background-color: {caliper_color};
+                color: #FFFFFF;
+                border-radius: 20px;
+                padding: 8px 16px;
+                font-weight: bold;
+            }}
+        """)
+        
+        # Update shape analysis with defensive access
+        blob_count = getattr(result.shape, 'blob_count', 0)
+        has_circular = getattr(result.shape, 'has_circular_structure', False)
+        
+        self._blob_count_label.setText(f"Blob 수: {blob_count}")
+        circular_text = "있음" if has_circular else "없음"
+        self._circular_flag.setText(f"원형 구조: {circular_text}")
+        
+        # Update separation score with safe fallback and tooltip for no NG case
+        separation_score = getattr(result.histogram, 'separation_score', None)
+        if separation_score is not None:
+            score = int(separation_score)
+            self._separation_progress.setValue(score)
+            self._separation_progress.setToolTip(f"분리도: {separation_score:.1f}%")
+        else:
+            score = 0
+            self._separation_progress.setValue(score)
+            self._separation_progress.setToolTip("NG 이미지 없음 — 분리도 계산 불가")
+        
+        # Update AI summary with defensive access
+        ai_summary = getattr(result, 'ai_summary', None)
+        self._ai_summary_text.setText(ai_summary or "AI 분석을 사용할 수 없습니다.")
+        
+        # Update recommendations list with defensive access
+        self._recommendations_list.clear()
+        recommendations = getattr(result, 'preprocessing_recommendations', [])
+        for recommendation in recommendations:
+            item = QListWidgetItem(recommendation)
+            self._recommendations_list.addItem(item)
 
 
 class ResultPage(BasePage):
@@ -34,14 +469,90 @@ class ResultPage(BasePage):
         header = PageHeader("결과 보기", "분석 결과, 파라미터 및 성능 지표")
         layout.addWidget(header)
         
-        # Placeholder content
-        placeholder_label = QLabel("결과 보기 — 준비 중")
-        placeholder_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        placeholder_label.setStyleSheet("""
-            QLabel {
+        # Tab widget
+        self._tab_widget = QTabWidget()
+        self._tab_widget.setStyleSheet("""
+            QTabWidget::pane {
+                border: 1px solid #2A2A4A;
+                background-color: #1A1A2E;
+            }
+            QTabWidget::tab-bar {
+                left: 5px;
+            }
+            QTabBar::tab {
+                background-color: #16213E;
                 color: #9E9E9E;
-                font-size: 16px;
-                padding: 40px;
+                padding: 12px 20px;
+                margin-right: 2px;
+                border-top-left-radius: 6px;
+                border-top-right-radius: 6px;
+            }
+            QTabBar::tab:selected {
+                background-color: #1E88E5;
+                color: #FFFFFF;
+            }
+            QTabBar::tab:hover {
+                background-color: #424242;
+                color: #E0E0E0;
             }
         """)
-        layout.addWidget(placeholder_label)
+        
+        # Create tabs
+        self._create_tabs()
+        
+        layout.addWidget(self._tab_widget)
+        
+    def _create_tabs(self) -> None:
+        """Create all result tabs."""
+        # Summary tab (placeholder)
+        summary_tab = QWidget()
+        summary_layout = QVBoxLayout(summary_tab)
+        summary_label = QLabel("Align/Inspection 완료 후 표시됩니다")
+        summary_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        summary_label.setStyleSheet("color: #9E9E9E; font-size: 16px; padding: 40px;")
+        summary_layout.addWidget(summary_label)
+        self._tab_widget.addTab(summary_tab, "요약")
+        
+        # Feature analysis tab (fully implemented)
+        self._feature_tab = FeatureTab()
+        self._tab_widget.addTab(self._feature_tab, "이미지 특성")
+        
+        # Align results tab (placeholder)
+        align_tab = QWidget()
+        align_layout = QVBoxLayout(align_tab)
+        align_label = QLabel("Align 결과 — 준비 중")
+        align_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        align_label.setStyleSheet("color: #9E9E9E; font-size: 16px; padding: 40px;")
+        align_layout.addWidget(align_label)
+        self._tab_widget.addTab(align_tab, "Align 결과")
+        
+        # Inspection results tab (placeholder)
+        inspection_tab = QWidget()
+        inspection_layout = QVBoxLayout(inspection_tab)
+        inspection_label = QLabel("Inspection 결과 — 준비 중")
+        inspection_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        inspection_label.setStyleSheet("color: #9E9E9E; font-size: 16px; padding: 40px;")
+        inspection_layout.addWidget(inspection_label)
+        self._tab_widget.addTab(inspection_tab, "Inspection 결과")
+        
+        # Feasibility tab (placeholder)
+        feasibility_tab = QWidget()
+        feasibility_layout = QVBoxLayout(feasibility_tab)
+        feasibility_label = QLabel("Feasibility 분석 — 준비 중")
+        feasibility_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        feasibility_label.setStyleSheet("color: #9E9E9E; font-size: 16px; padding: 40px;")
+        feasibility_layout.addWidget(feasibility_label)
+        self._tab_widget.addTab(feasibility_tab, "Feasibility")
+        
+    def load_result(self, result: FullFeatureAnalysis) -> None:
+        """
+        Load analysis result and switch to feature analysis tab.
+        
+        Args:
+            result: The FullFeatureAnalysis result to display
+        """
+        # Load data into feature tab
+        self._feature_tab.load_data(result)
+        
+        # Switch to feature analysis tab
+        self._tab_widget.setCurrentIndex(1)  # Index 1 is the "이미지 특성" tab

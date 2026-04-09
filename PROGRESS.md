@@ -3,8 +3,8 @@
 마지막 업데이트: 2026-04-09
 
 ## 전체 진행률
-- 완료: 25 / 50 Steps
-- 현재 Phase: Phase 5 — 분석 실행 (다음 단계)
+- 완료: 26 / 50 Steps
+- 현재 Phase: Phase 4 — 분석 실행 UI
 
 ---
 
@@ -51,31 +51,31 @@
 | 23 | 검사 목적 데이터 모델 및 검증 레이어 | ✅ 완료 | 2026-04-08 | InspectionPurpose 데이터클래스, PurposeValidator 구현 완료 |
 | 24 | 검사 목적 입력 페이지 UI | ✅ 완료 | 2026-04-08 | PurposePage 구현 완료. UI 버그 3종 수정 포함 (토글버튼 렌더링, 입력필드 반응형 스크롤, 확정버튼 margin 찌부) |
 | 25 | 분석 실행 화면 UI | ✅ 완료 | 2026-04-09 | AnalysisProgressPanel, LogViewer, AnalysisWorker, AnalysisPage 구현 완료. Pre-flight 체크, 진행 상황 표시, 백그라운드 워커. 이미지 타입 매칭 및 AI 처리 오류 디버깅 완료 |
-| 26 | Pattern Matching Align 엔진 | 🔲 대기 | - | |
-| 27 | Caliper Align 엔진 | 🔲 대기 | - | |
-| 28 | Feature-based / Contour / Blob Align 엔진 | 🔲 대기 | - | |
-| 29 | Align Fallback 체인 통합 | 🔲 대기 | - | |
-| 30 | Align 결과 UI 표시 | 🔲 대기 | - | |
-| 31 | Align 통합 테스트 및 검증 | 🔲 대기 | - | |
-| 32 | Blob 기반 Inspection 엔진 | 🔲 대기 | - | |
-| 33 | Circular Caliper Inspection 엔진 | 🔲 대기 | - | |
-| 34 | Linear Caliper Inspection 엔진 | 🔲 대기 | - | |
-| 35 | Pattern 기반 Inspection 엔진 | 🔲 대기 | - | |
-| 36 | Dynamic Candidate 생성기 | 🔲 대기 | - | |
-| 37 | 평가 엔진 (Evaluation) | 🔲 대기 | - | |
-| 38 | 최적화 루프 및 Best Candidate 선택 | 🔲 대기 | - | |
-| 39 | Failure 분석 | 🔲 대기 | - | |
-| 40 | Feasibility Analysis 및 기술 수준 판단 | 🔲 대기 | - | |
-| 41 | Inspection 통합 테스트 | 🔲 대기 | - | |
-| 42 | 결과 뷰어 레이아웃 | 🔲 대기 | - | |
-| 43 | Inspection 결과 카드 및 파라미터 테이블 | 🔲 대기 | - | |
-| 44 | Failure 케이스 뷰어 | 🔲 대기 | - | |
-| 45 | Feasibility 및 기술 수준 결과 표시 | 🔲 대기 | - | |
-| 46 | 결과 내보내기 (Export) | 🔲 대기 | - | |
-| 47 | 전체 워크플로우 E2E 통합 테스트 | 🔲 대기 | - | |
-| 48 | UI 품질 개선 및 UX 다듬기 | 🔲 대기 | - | |
-| 49 | 배포 패키징 | 🔲 대기 | - | |
-| 50 | 최종 검수 및 문서화 | 🔲 대기 | - | |
+| 26 | Feature Analysis 결과 뷰어 UI | ✅ 완료 | 2026-04-09 | ResultPage, FeatureTab 구현 완료. 탭 위젯, 히스토그램 통계, 노이즈 배지, 에지 분석, OK/NG 분리도 진행 바, AI 요약, 전처리 권장사항. Signal wiring, 테스트 17개 |
+| 27 | Pattern Matching Align 엔진 | 🔲 대기 | - | |
+| 28 | Caliper Align 엔진 | 🔲 대기 | - | |
+| 29 | Feature-based / Contour / Blob Align 엔진 | 🔲 대기 | - | |
+| 30 | Align Fallback 체인 통합 | 🔲 대기 | - | |
+| 31 | Align 결과 UI 표시 | 🔲 대기 | - | |
+| 32 | Align 통합 테스트 및 검증 | 🔲 대기 | - | |
+| 33 | Blob 기반 Inspection 엔진 | 🔲 대기 | - | |
+| 34 | Circular Caliper Inspection 엔진 | 🔲 대기 | - | |
+| 35 | Linear Caliper Inspection 엔진 | 🔲 대기 | - | |
+| 36 | Pattern 기반 Inspection 엔진 | 🔲 대기 | - | |
+| 37 | Dynamic Candidate 생성기 | 🔲 대기 | - | |
+| 38 | 평가 엔진 (Evaluation) | 🔲 대기 | - | |
+| 39 | 최적화 루프 및 Best Candidate 선택 | 🔲 대기 | - | |
+| 40 | Failure 분석 | 🔲 대기 | - | |
+| 41 | Feasibility Analysis 및 기술 수준 판단 | 🔲 대기 | - | |
+| 42 | Inspection 통합 테스트 | 🔲 대기 | - | |
+| 43 | 결과 뷰어 레이아웃 | 🔲 대기 | - | |
+| 44 | Inspection 결과 카드 및 파라미터 테이블 | 🔲 대기 | - | |
+| 45 | Failure 케이스 뷰어 | 🔲 대기 | - | |
+| 46 | Feasibility 및 기술 수준 결과 표시 | 🔲 대기 | - | |
+| 47 | 결과 내보내기 (Export) | 🔲 대기 | - | |
+| 48 | 전체 워크플로우 E2E 통합 테스트 | 🔲 대기 | - | |
+| 49 | UI 품질 개선 및 UX 다듬기 | 🔲 대기 | - | |
+| 50 | 배포 패키징 및 최종 검수 | 🔲 대기 | - | |
 
 ---
 
@@ -83,7 +83,10 @@
 
 | 날짜 | Step | 내용 |
 |------|------|------|
-| - | - | - |
+| 2026-04-09 | 26 | [버그1] 히스토그램 통계 카드 수치 미표시 — HistogramAnalysisResult 필드명 불일치. getattr 방어 코드로 수정 |
+| 2026-04-09 | 26 | [버그2] 노이즈 배지 색상 오류 — noise_level 대소문자 불일치. .upper() 정규화로 수정 |
+| 2026-04-09 | 26 | [버그3] 분리도 바 0% — separation_score None 접근 실패. getattr fallback + NG 없음 툴팁 추가 |
+| 2026-04-09 | 26 | [버그4] 히스토그램 카드 수치 미표시 지속 — result.histogram None 접근 실패 → histogram 객체 존재성 검증 먼저 수행 |
 
 ---
 

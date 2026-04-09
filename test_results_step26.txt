@@ -1,0 +1,60 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.11.15, pytest-9.0.2, pluggy-1.6.0 -- /Users/geseuteu/.pyenv/versions/3.11.15/bin/python
+cachedir: .pytest_cache
+PyQt6 6.11.0 -- Qt runtime 6.11.0 -- Qt compiled 6.11.0
+rootdir: /Users/geseuteu/argos
+configfile: pytest.ini (WARNING: ignoring pytest config in pyproject.toml!)
+plugins: cov-7.1.0, asyncio-1.3.0, anyio-3.7.1, qt-4.5.0, Faker-40.11.1
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 457 items / 4 errors
+
+==================================== ERRORS ====================================
+_____________ ERROR collecting tests/unit/test_feature_analyzer.py _____________
+tests/unit/test_feature_analyzer.py:16: in <module>
+    from core.analyzers.feature_analyzer import FeatureAnalyzer, FullFeatureAnalysis
+core/analyzers/feature_analyzer.py:28: in <module>
+    class FullFeatureAnalysis:
+core/analyzers/feature_analyzer.py:40: in FullFeatureAnalysis
+    preprocessing_recommendations: list[str] = field(default_factory=list)
+                                               ^^^^^
+E   NameError: name 'field' is not defined
+_______________ ERROR collecting tests/unit/test_main_window.py ________________
+tests/unit/test_main_window.py:12: in <module>
+    from ui.main_window import MainWindow
+ui/main_window.py:27: in <module>
+    from ui.pages.analysis_page import AnalysisPage
+ui/pages/analysis_page.py:14: in <module>
+    from core.analyzers.feature_analyzer import FullFeatureAnalysis
+core/analyzers/feature_analyzer.py:28: in <module>
+    class FullFeatureAnalysis:
+core/analyzers/feature_analyzer.py:40: in FullFeatureAnalysis
+    preprocessing_recommendations: list[str] = field(default_factory=list)
+                                               ^^^^^
+E   NameError: name 'field' is not defined
+____________ ERROR collecting tests/unit/test_step25_analysis_ui.py ____________
+tests/unit/test_step25_analysis_ui.py:17: in <module>
+    from core.analyzers.feature_analyzer import FullFeatureAnalysis
+core/analyzers/feature_analyzer.py:28: in <module>
+    class FullFeatureAnalysis:
+core/analyzers/feature_analyzer.py:40: in FullFeatureAnalysis
+    preprocessing_recommendations: list[str] = field(default_factory=list)
+                                               ^^^^^
+E   NameError: name 'field' is not defined
+____________ ERROR collecting tests/unit/test_step26_result_page.py ____________
+tests/unit/test_step26_result_page.py:13: in <module>
+    from ui.pages.result_page import ResultPage, FeatureTab
+ui/pages/result_page.py:17: in <module>
+    from core.analyzers.feature_analyzer import FullFeatureAnalysis
+core/analyzers/feature_analyzer.py:28: in <module>
+    class FullFeatureAnalysis:
+core/analyzers/feature_analyzer.py:40: in FullFeatureAnalysis
+    preprocessing_recommendations: list[str] = field(default_factory=list)
+                                               ^^^^^
+E   NameError: name 'field' is not defined
+=========================== short test summary info ============================
+ERROR tests/unit/test_feature_analyzer.py - NameError: name 'field' is not defined
+ERROR tests/unit/test_main_window.py - NameError: name 'field' is not defined
+ERROR tests/unit/test_step25_analysis_ui.py - NameError: name 'field' is not defined
+ERROR tests/unit/test_step26_result_page.py - NameError: name 'field' is not defined
+!!!!!!!!!!!!!!!!!!! Interrupted: 4 errors during collection !!!!!!!!!!!!!!!!!!!!
+============================== 4 errors in 0.53s ===============================
