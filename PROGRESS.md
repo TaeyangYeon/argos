@@ -51,7 +51,7 @@
 | 23 | 검사 목적 데이터 모델 및 검증 레이어 | ✅ 완료 | 2026-04-08 | InspectionPurpose 데이터클래스, PurposeValidator 구현 완료 |
 | 24 | 검사 목적 입력 페이지 UI | ✅ 완료 | 2026-04-08 | PurposePage 구현 완료. UI 버그 3종 수정 포함 (토글버튼 렌더링, 입력필드 반응형 스크롤, 확정버튼 margin 찌부) |
 | 25 | 분석 실행 화면 UI | ✅ 완료 | 2026-04-09 | AnalysisProgressPanel, LogViewer, AnalysisWorker, AnalysisPage 구현 완료. Pre-flight 체크, 진행 상황 표시, 백그라운드 워커. 이미지 타입 매칭 및 AI 처리 오류 디버깅 완료 |
-| 26 | Feature Analysis 결과 뷰어 UI | ✅ 완료 | 2026-04-09 | ResultPage, FeatureTab 구현 완료. 탭 위젯, 히스토그램 통계, 노이즈 배지, 에지 분석, OK/NG 분리도 진행 바, AI 요약, 전처리 권장사항. Signal wiring, 테스트 17개 |
+| 26 | Feature Analysis 결과 뷰어 UI | ✅ 완료 | 2026-04-09 | ResultPage, FeatureTab 구현 완료. 탭 위젯, 히스토그램 통계, 노이즈 배지, 에지 분석, OK/NG 분리도 진행 바, AI 요약, 전처리 권장사항. StatCard→QLabel 리팩터링 완료. Signal wiring, 테스트 17개 |
 | 27 | Pattern Matching Align 엔진 | 🔲 대기 | - | |
 | 28 | Caliper Align 엔진 | 🔲 대기 | - | |
 | 29 | Feature-based / Contour / Blob Align 엔진 | 🔲 대기 | - | |
@@ -87,6 +87,10 @@
 | 2026-04-09 | 26 | [버그2] 노이즈 배지 색상 오류 — noise_level 대소문자 불일치. .upper() 정규화로 수정 |
 | 2026-04-09 | 26 | [버그3] 분리도 바 0% — separation_score None 접근 실패. getattr fallback + NG 없음 툴팁 추가 |
 | 2026-04-09 | 26 | [버그4] 히스토그램 카드 수치 미표시 지속 — result.histogram None 접근 실패 → histogram 객체 존재성 검증 먼저 수행 |
+| 2026-04-09 | 26 | [버그5] 히스토그램 카드 UI 렌더링 실패 — StatCard.update() 누락으로 UI 새로고침 안됨 → update() 강제 호출 + 상세 디버깅 로그 추가 |
+| 2026-04-09 | 26 | [최종해결] 히스토그램 카드 UI 완전 수정 — QLabel 레벨 repaint() 누락으로 위젯 갱신 실패 → _value_label.repaint() 직접 호출로 강제 새로고침 |
+| 2026-04-09 | 26 | [최종해결] 실제 앱에서 히스토그램 카드 미표시 — load_result() 호출 시점이 위젯 렌더링 전임. QTimer.singleShot(0) 지연 호출 + 자동 페이지 전환으로 해결 |
+| 2026-04-09 | 26 | [근본해결] StatCard 위젯 렌더링 버그 완전 해결 — StatCard를 제거하고 plain QLabel로 교체. 모든 paint engine 오류 제거, 히스토그램 값 정상 표시 확인 |
 
 ---
 

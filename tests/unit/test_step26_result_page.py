@@ -144,9 +144,9 @@ class TestFeatureTab:
         feature_tab.load_data(mock_analysis_result)
         
         # Check histogram stats are updated
-        assert "128.5" in feature_tab._mean_card._value_label.text()
-        assert "45.2" in feature_tab._std_card._value_label.text()
-        assert "240" in feature_tab._range_card._value_label.text()
+        assert "128.5" in feature_tab._mean_label.text()
+        assert "45.2" in feature_tab._std_label.text()
+        assert "240" in feature_tab._range_label.text()
         
         # Check noise badge is updated
         assert "HIGH" in feature_tab._noise_badge.text()
@@ -366,6 +366,9 @@ class TestResultPageIntegration:
         # Load result should switch to feature tab (index 1)
         result_page.load_result(mock_analysis_result)
         
+        # Process the deferred Qt timer event
+        result_page._apply_result()
+        
         current_index = result_page._tab_widget.currentIndex()
         assert current_index == 1  # "이미지 특성" tab
     
@@ -373,10 +376,13 @@ class TestResultPageIntegration:
         """Test that load_result() properly populates the feature tab with data."""
         result_page.load_result(mock_analysis_result)
         
+        # Process the deferred Qt timer event
+        result_page._apply_result()
+        
         feature_tab = result_page._feature_tab
         
         # Verify data is loaded in feature tab
-        assert "100.0" in feature_tab._mean_card._value_label.text()
+        assert "100.0" in feature_tab._mean_label.text()
         assert "MEDIUM" in feature_tab._noise_badge.text()
         assert "부적합" in feature_tab._caliper_badge.text()
         assert "5" in feature_tab._blob_count_label.text()

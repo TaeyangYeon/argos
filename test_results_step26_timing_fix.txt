@@ -444,8 +444,8 @@ tests/unit/test_step26_result_page.py::TestFeatureTab::test_caliper_unsuitable_b
 tests/unit/test_step26_result_page.py::TestFeatureTab::test_preprocessing_recommendations_list PASSED [ 83%]
 tests/unit/test_step26_result_page.py::TestFeatureTab::test_circular_structure_present PASSED [ 83%]
 tests/unit/test_step26_result_page.py::TestFeatureTab::test_circular_structure_absent PASSED [ 83%]
-tests/unit/test_step26_result_page.py::TestResultPageIntegration::test_tab_switches_to_feature_on_load PASSED [ 83%]
-tests/unit/test_step26_result_page.py::TestResultPageIntegration::test_load_result_populates_feature_tab PASSED [ 83%]
+tests/unit/test_step26_result_page.py::TestResultPageIntegration::test_tab_switches_to_feature_on_load FAILED [ 83%]
+tests/unit/test_step26_result_page.py::TestResultPageIntegration::test_load_result_populates_feature_tab FAILED [ 83%]
 tests/unit/test_thumbnail_grid.py::TestThumbnailCard::test_thumbnail_card_created PASSED [ 84%]
 tests/unit/test_thumbnail_grid.py::TestThumbnailCard::test_thumbnail_card_shows_filename PASSED [ 84%]
 tests/unit/test_thumbnail_grid.py::TestThumbnailCard::test_thumbnail_card_type_badge_align_ok PASSED [ 84%]
@@ -531,4 +531,43 @@ tests/unit/test_validators.py::TestSampleValidator::test_validate_ok_not_empty_z
 tests/unit/test_validators.py::TestSampleValidator::test_validate_ok_not_empty_one PASSED [ 99%]
 tests/unit/test_validators.py::TestSampleValidator::test_validate_ok_not_empty_multiple PASSED [100%]
 
-============================= 522 passed in 8.93s ==============================
+=================================== FAILURES ===================================
+________ TestResultPageIntegration.test_tab_switches_to_feature_on_load ________
+tests/unit/test_step26_result_page.py:370: in test_tab_switches_to_feature_on_load
+    assert current_index == 1  # "이미지 특성" tab
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+E   assert 0 == 1
+--------------------------- Captured stdout teardown ---------------------------
+[DEBUG] load_result called: <class 'core.analyzers.feature_analyzer.FullFeatureAnalysis'>
+[DEBUG] histogram result: HistogramAnalysisResult(mean_gray=100.0, std_gray=30.0, min_gray=0, max_gray=255, dynamic_range=255, peak_count=1, distribution_type='unimodal', ok_mean=None, ng_mean=None, separation_score=50.0)
+[DEBUG] mean_gray field: 100.0
+[DEBUG] std_gray field: 30.0
+[DEBUG] dynamic_range field: 255
+[DEBUG] Setting mean_card to: '100.0'
+[DEBUG] Setting std_card to: '30.0'
+[DEBUG] Setting range_card to: '255'
+_______ TestResultPageIntegration.test_load_result_populates_feature_tab _______
+tests/unit/test_step26_result_page.py:379: in test_load_result_populates_feature_tab
+    assert "100.0" in feature_tab._mean_card._value_label.text()
+E   AssertionError: assert '100.0' in '--'
+E    +  where '--' = <built-in method text of QLabel object at 0x159d06830>()
+E    +    where <built-in method text of QLabel object at 0x159d06830> = <PyQt6.QtWidgets.QLabel object at 0x159d06830>.text
+E    +      where <PyQt6.QtWidgets.QLabel object at 0x159d06830> = <ui.components.stat_card.StatCard object at 0x159d06050>._value_label
+E    +        where <ui.components.stat_card.StatCard object at 0x159d06050> = <ui.pages.result_page.FeatureTab object at 0x159d05900>._mean_card
+--------------------------- Captured stdout teardown ---------------------------
+[DEBUG] load_result called: <class 'core.analyzers.feature_analyzer.FullFeatureAnalysis'>
+[DEBUG] histogram result: HistogramAnalysisResult(mean_gray=100.0, std_gray=30.0, min_gray=0, max_gray=255, dynamic_range=255, peak_count=1, distribution_type='unimodal', ok_mean=None, ng_mean=None, separation_score=50.0)
+[DEBUG] mean_gray field: 100.0
+[DEBUG] std_gray field: 30.0
+[DEBUG] dynamic_range field: 255
+[DEBUG] Setting mean_card to: '100.0'
+[DEBUG] Setting std_card to: '30.0'
+[DEBUG] Setting range_card to: '255'
+=========================== short test summary info ============================
+FAILED tests/unit/test_step26_result_page.py::TestResultPageIntegration::test_tab_switches_to_feature_on_load - assert 0 == 1
+FAILED tests/unit/test_step26_result_page.py::TestResultPageIntegration::test_load_result_populates_feature_tab - AssertionError: assert '100.0' in '--'
+ +  where '--' = <built-in method text of QLabel object at 0x159d06830>()
+ +    where <built-in method text of QLabel object at 0x159d06830> = <PyQt6.QtWidgets.QLabel object at 0x159d06830>.text
+ +      where <PyQt6.QtWidgets.QLabel object at 0x159d06830> = <ui.components.stat_card.StatCard object at 0x159d06050>._value_label
+ +        where <ui.components.stat_card.StatCard object at 0x159d06050> = <ui.pages.result_page.FeatureTab object at 0x159d05900>._mean_card
+======================== 2 failed, 520 passed in 8.33s =========================

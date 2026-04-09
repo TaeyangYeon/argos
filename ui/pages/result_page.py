@@ -8,12 +8,11 @@ from PyQt6.QtWidgets import (
     QVBoxLayout, QHBoxLayout, QLabel, QTabWidget, QWidget, QScrollArea,
     QTextEdit, QProgressBar, QFrame, QListWidget, QListWidgetItem
 )
-from PyQt6.QtCore import Qt
+from PyQt6.QtCore import Qt, QTimer
 from PyQt6.QtGui import QFont
 
 from .base_page import BasePage, PageHeader
 from ui.components.sidebar import PageID
-from ui.components.stat_card import StatCard
 from core.analyzers.feature_analyzer import FullFeatureAnalysis
 
 
@@ -94,22 +93,65 @@ class FeatureTab(QWidget):
         title.setStyleSheet("color: #E0E0E0; font-size: 16px; font-weight: bold; margin-bottom: 12px;")
         layout.addWidget(title)
         
-        # Stats cards container
+        # Stats container with plain labels
         stats_layout = QHBoxLayout()
         
-        # Create stat cards (will be populated by load_result)
-        self._mean_card = StatCard("평균 밝기", "--", "0-255 범위")
-        self._std_card = StatCard("표준편차", "--", "분산도 측정")
-        self._range_card = StatCard("동적 범위", "--", "대비 수준")
+        # Plain QLabel widgets instead of StatCard
+        self._mean_container = self._create_stat_label_group("평균 밝기", "0-255 범위")
+        self._std_container = self._create_stat_label_group("표준편차", "분산도 측정")
+        self._range_container = self._create_stat_label_group("동적 범위", "대비 수준")
         
-        stats_layout.addWidget(self._mean_card)
-        stats_layout.addWidget(self._std_card)
-        stats_layout.addWidget(self._range_card)
+        stats_layout.addWidget(self._mean_container)
+        stats_layout.addWidget(self._std_container)
+        stats_layout.addWidget(self._range_container)
         stats_layout.addStretch()
         
         layout.addLayout(stats_layout)
         
         return section
+    
+    def _create_stat_label_group(self, title: str, subtitle: str) -> QFrame:
+        """Create a simple stat display group with plain QLabels."""
+        container = QFrame()
+        container.setStyleSheet("""
+            QFrame {
+                background-color: #1E2A4A;
+                border: 1px solid #2A2A4A;
+                border-left: 4px solid #1E88E5;
+                border-radius: 8px;
+                padding: 12px;
+                min-width: 160px;
+                max-height: 100px;
+            }
+        """)
+        
+        layout = QVBoxLayout(container)
+        layout.setSpacing(4)
+        
+        # Title label
+        title_label = QLabel(title)
+        title_label.setStyleSheet("color: #9E9E9E; font-size: 12px;")
+        layout.addWidget(title_label)
+        
+        # Value label (store reference for updates)
+        value_label = QLabel("—")
+        value_label.setStyleSheet("color: #1E88E5; font-size: 28px; font-weight: bold;")
+        layout.addWidget(value_label)
+        
+        # Subtitle label
+        subtitle_label = QLabel(subtitle)
+        subtitle_label.setStyleSheet("color: #616161; font-size: 11px;")
+        layout.addWidget(subtitle_label)
+        
+        # Store the value label for easy access
+        if title == "평균 밝기":
+            self._mean_label = value_label
+        elif title == "표준편차":
+            self._std_label = value_label
+        elif title == "동적 범위":
+            self._range_label = value_label
+        
+        return container
         
     def _create_analysis_section(self) -> QWidget:
         """Create noise and edge analysis section."""
@@ -348,29 +390,21 @@ class FeatureTab(QWidget):
         
     def load_data(self, result: FullFeatureAnalysis) -> None:
         """Load feature analysis data into the UI."""
-        # Debug logging to verify data flow
-        print(f"[DEBUG] load_result called: {type(result)}")
+        # Update histogram stats with defensive access
         histogram = getattr(result, 'histogram', None)
-        print(f"[DEBUG] histogram result: {histogram}")
-        if histogram:
-            mean_field = getattr(histogram, 'mean_gray', 'FIELD_MISSING')
-            std_field = getattr(histogram, 'std_gray', 'FIELD_MISSING')
-            range_field = getattr(histogram, 'dynamic_range', 'FIELD_MISSING')
-            print(f"[DEBUG] mean_gray field: {mean_field}")
-            print(f"[DEBUG] std_gray field: {std_field}")
-            print(f"[DEBUG] dynamic_range field: {range_field}")
-        else:
-            print(f"[DEBUG] histogram is None or missing")
-        
-        # Update histogram stats with full defensive access
-        
         mean_gray = getattr(histogram, 'mean_gray', None) if histogram else None
         std_gray = getattr(histogram, 'std_gray', None) if histogram else None
         dynamic_range = getattr(histogram, 'dynamic_range', None) if histogram else None
         
-        self._mean_card.update_value(f"{mean_gray:.1f}" if mean_gray is not None else "—")
-        self._std_card.update_value(f"{std_gray:.1f}" if std_gray is not None else "—")
-        self._range_card.update_value(str(dynamic_range) if dynamic_range is not None else "—")
+        # Format values for display
+        mean_value = f"{mean_gray:.1f}" if mean_gray is not None else "—"
+        std_value = f"{std_gray:.1f}" if std_gray is not None else "—"
+        range_value = str(dynamic_range) if dynamic_range is not None else "—"
+        
+        # Update histogram QLabel widgets directly
+        self._mean_label.setText(mean_value)
+        self._std_label.setText(std_value)
+        self._range_label.setText(range_value)
         
         # Update noise level badge with case normalization
         noise_level = getattr(result.noise, 'noise_level', 'Low')
@@ -427,9 +461,14 @@ class FeatureTab(QWidget):
         # Update separation score with safe fallback and tooltip for no NG case
         separation_score = getattr(result.histogram, 'separation_score', None)
         if separation_score is not None:
-            score = int(separation_score)
-            self._separation_progress.setValue(score)
-            self._separation_progress.setToolTip(f"분리도: {separation_score:.1f}%")
+            try:
+                score = int(float(separation_score))
+                self._separation_progress.setValue(score)
+                self._separation_progress.setToolTip(f"분리도: {float(separation_score):.1f}%")
+            except (ValueError, TypeError):
+                score = 0
+                self._separation_progress.setValue(score)
+                self._separation_progress.setToolTip("분리도 데이터 오류")
         else:
             score = 0
             self._separation_progress.setValue(score)
@@ -458,6 +497,7 @@ class ResultPage(BasePage):
     def __init__(self, parent=None):
         """Initialize the result page."""
         super().__init__(PageID.RESULTS, "결과 보기", parent)
+        self._pending_result = None
         
     def setup_ui(self) -> None:
         """Setup the result page UI."""
@@ -468,6 +508,7 @@ class ResultPage(BasePage):
         # Page header
         header = PageHeader("결과 보기", "분석 결과, 파라미터 및 성능 지표")
         layout.addWidget(header)
+        
         
         # Tab widget
         self._tab_widget = QTabWidget()
@@ -551,8 +592,18 @@ class ResultPage(BasePage):
         Args:
             result: The FullFeatureAnalysis result to display
         """
+        self._pending_result = result
+        QTimer.singleShot(0, self._apply_result)
+        
+    def _apply_result(self) -> None:
+        """Apply the pending result data to UI components."""
+        result = self._pending_result
+        if result is None:
+            return
+            
         # Load data into feature tab
         self._feature_tab.load_data(result)
         
         # Switch to feature analysis tab
         self._tab_widget.setCurrentIndex(1)  # Index 1 is the "이미지 특성" tab
+        

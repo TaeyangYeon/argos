@@ -531,4 +531,4 @@ tests/unit/test_validators.py::TestSampleValidator::test_validate_ok_not_empty_z
 tests/unit/test_validators.py::TestSampleValidator::test_validate_ok_not_empty_one PASSED [ 99%]
 tests/unit/test_validators.py::TestSampleValidator::test_validate_ok_not_empty_multiple PASSED [100%]
 
-============================= 522 passed in 8.93s ==============================
+============================= 522 passed in 10.28s =============================
