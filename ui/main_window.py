@@ -48,8 +48,9 @@ class MainWindow(QMainWindow):
         self.image_store = ImageStore()
         self.provider_factory = ProviderFactory()
         
-        # Store for inspection purpose
+        # Store for inspection purpose and ROI config
         self._inspection_purpose = None
+        self._roi_config = None
         
         self._setup_window()
         self._setup_toolbar()
@@ -113,7 +114,7 @@ class MainWindow(QMainWindow):
             PageID.UPLOAD: UploadPage(self.image_store),
             PageID.ROI: ROIPage(self.image_store),
             PageID.PURPOSE: PurposePage(),
-            PageID.ANALYSIS: AnalysisPage(),
+            PageID.ANALYSIS: AnalysisPage(self.image_store),
             PageID.RESULTS: ResultPage(),
             PageID.SETTINGS: SettingsPage(),
         }
@@ -136,6 +137,14 @@ class MainWindow(QMainWindow):
         
         # Connect purpose page signals
         self._pages[PageID.PURPOSE].purpose_confirmed.connect(self._on_purpose_confirmed)
+        
+        # Connect analysis page signals
+        self._pages[PageID.ANALYSIS].navigate_to_result.connect(
+            lambda: self._sidebar.navigate_to(PageID.RESULTS)
+        )
+        
+        # Connect ROI page signals to update analysis page
+        self._pages[PageID.ROI].roi_confirmed.connect(self._on_roi_confirmed)
         
         # Set initial page to dashboard
         self._sidebar.navigate_to(PageID.DASHBOARD)
@@ -165,6 +174,32 @@ class MainWindow(QMainWindow):
         """
         self._inspection_purpose = purpose
         self._logger.info(f"Inspection purpose confirmed: {purpose.inspection_type}")
+        
+        # Update analysis page with new purpose
+        self._pages[PageID.ANALYSIS].set_inspection_purpose(purpose)
+        self._update_analysis_preflight()
+        
+    def _on_roi_confirmed(self, roi_config) -> None:
+        """
+        Handle ROI configuration confirmation.
+        
+        Args:
+            roi_config: The confirmed ROIConfig object
+        """
+        self._roi_config = roi_config
+        self._logger.info(f"ROI config confirmed: {roi_config}")
+        
+        # Update analysis page with new ROI config
+        self._pages[PageID.ANALYSIS].set_roi_config(roi_config)
+        self._update_analysis_preflight()
+        
+    def _update_analysis_preflight(self) -> None:
+        """Update analysis page pre-flight check with current state."""
+        self._pages[PageID.ANALYSIS].update_preflight(
+            self.image_store, 
+            self._roi_config, 
+            self._inspection_purpose
+        )
         
     def _setup_status_bar(self) -> None:
         """Setup the status bar with version info."""

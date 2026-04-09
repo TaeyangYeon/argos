@@ -242,6 +242,18 @@ class ImageStore:
         except Exception as e:
             raise RuntimeProcessingError(f"Failed to load image: {e}")
     
+    def add_image(self, image_meta: ImageMeta) -> None:
+        """
+        Add a pre-created ImageMeta object to the store.
+        
+        This is primarily used for testing when you have synthetic ImageMeta objects.
+        
+        Args:
+            image_meta: Pre-created ImageMeta object
+        """
+        self._images[image_meta.id] = image_meta
+        self._logger.debug(f"Added pre-created image {image_meta.id} ({image_meta.image_type.value})")
+    
     def _generate_thumbnail(self, image: np.ndarray, max_size: int = 128) -> np.ndarray:
         """
         Generate a thumbnail image preserving aspect ratio.

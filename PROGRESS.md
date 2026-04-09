@@ -1,10 +1,10 @@
 # Argos — 개발 진행 현황
 
-마지막 업데이트: 2026-04-08
+마지막 업데이트: 2026-04-09
 
 ## 전체 진행률
-- 완료: 24 / 50 Steps
-- 현재 Phase: Phase 4 — Align 엔진 (다음 단계)
+- 완료: 25 / 50 Steps
+- 현재 Phase: Phase 5 — 분석 실행 (다음 단계)
 
 ---
 
@@ -15,7 +15,7 @@
 | Phase 1 | Step 1~8 — 프로젝트 기반 구축 | ✅ 완료 |
 | Phase 2 | Step 9~16 — UI 기본 골격 | ✅ 완료 |
 | Phase 3 | Step 17~24 — Feature 분석 엔진 | ✅ 완료 |
-| Phase 4 | Step 25~31 — Align 엔진 | 🔲 대기 |
+| Phase 4 | Step 25~31 — 분석 실행 UI | 🔄 진행중 |
 | Phase 5 | Step 32~41 — Inspection 엔진 | 🔲 대기 |
 | Phase 6 | Step 42~46 — 결과 뷰어 및 출력 | 🔲 대기 |
 | Phase 7 | Step 47~50 — 통합 완성 및 운영 품질 | 🔲 대기 |
@@ -48,15 +48,15 @@
 | 20 | 에지 강도 분석 | ✅ 완료 | 2026-04-08 | EdgeAnalyzer, EdgeAnalysisResult 구현 완료. Sobel 그래디언트, 에지 밀도, 방향성 분석, Caliper 적합성 판단 |
 | 21 | 형상 및 Blob 특성 분석 | ✅ 완료 | 2026-04-08 | ShapeAnalyzer, BlobInfo, CircleInfo, ShapeAnalysisResult 구현 완료. Blob 감지, 원형도 측정, Hough 원 검출, 패턴 인식 |
 | 22 | Feature 분석 통합 및 AI 요약 | ✅ 완료 | 2026-04-08 | FullFeatureAnalysis, FeatureAnalyzer 구현 완료. AI 프롬프트 생성, OK/NG 분리 분석, JSON 저장 |
-| 23 | 분석 실행 화면 UI | ✅ 완료 | 2026-04-08 | InspectionPurpose 데이터클래스, PurposeValidator 구현 완료 |
+| 23 | 검사 목적 데이터 모델 및 검증 레이어 | ✅ 완료 | 2026-04-08 | InspectionPurpose 데이터클래스, PurposeValidator 구현 완료 |
 | 24 | 검사 목적 입력 페이지 UI | ✅ 완료 | 2026-04-08 | PurposePage 구현 완료. UI 버그 3종 수정 포함 (토글버튼 렌더링, 입력필드 반응형 스크롤, 확정버튼 margin 찌부) |
-| 25 | Pattern Matching Align 엔진 | 🔲 대기 | - | |
-| 26 | Caliper Align 엔진 | 🔲 대기 | - | |
-| 27 | Feature-based / Contour / Blob Align 엔진 | 🔲 대기 | - | |
-| 28 | Align Fallback 체인 통합 | 🔲 대기 | - | |
-| 29 | Align 결과 UI 표시 | 🔲 대기 | - | |
-| 30 | Align 통합 테스트 및 검증 | 🔲 대기 | - | |
-| 31 | ROI 적용 및 전처리 파이프라인 | 🔲 대기 | - | |
+| 25 | 분석 실행 화면 UI | ✅ 완료 | 2026-04-09 | AnalysisProgressPanel, LogViewer, AnalysisWorker, AnalysisPage 구현 완료. Pre-flight 체크, 진행 상황 표시, 백그라운드 워커. 이미지 타입 매칭 및 AI 처리 오류 디버깅 완료 |
+| 26 | Pattern Matching Align 엔진 | 🔲 대기 | - | |
+| 27 | Caliper Align 엔진 | 🔲 대기 | - | |
+| 28 | Feature-based / Contour / Blob Align 엔진 | 🔲 대기 | - | |
+| 29 | Align Fallback 체인 통합 | 🔲 대기 | - | |
+| 30 | Align 결과 UI 표시 | 🔲 대기 | - | |
+| 31 | Align 통합 테스트 및 검증 | 🔲 대기 | - | |
 | 32 | Blob 기반 Inspection 엔진 | 🔲 대기 | - | |
 | 33 | Circular Caliper Inspection 엔진 | 🔲 대기 | - | |
 | 34 | Linear Caliper Inspection 엔진 | 🔲 대기 | - | |

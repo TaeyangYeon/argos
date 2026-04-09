@@ -5,6 +5,30 @@ This module contains the complete QSS stylesheet for the modern dark theme.
 All color constants and styles are defined in a single DARK_THEME_QSS string.
 """
 
+
+class Colors:
+    """Color constants for the Argos dark theme."""
+    BG_PRIMARY = "#1A1A2E"
+    BG_SECONDARY = "#16213E"
+    BG_DARK = "#0F3460"
+    CARD_BG = "#16213E"
+    ACCENT = "#1E88E5"
+    ACCENT_HOVER = "#1565C0"
+    ERROR = "#E53935"
+    SUCCESS = "#4CAF50"
+    WARNING = "#FF9800"
+    TEXT_PRIMARY = "#E0E0E0"
+    TEXT_SECONDARY = "#9E9E9E"
+    TEXT_DISABLED = "#616161"
+    BORDER = "#2A2A4A"
+    BORDER_HOVER = "#1E88E5"
+
+
+class Fonts:
+    """Font constants for the Argos application."""
+    DEFAULT_FONT = "Noto Sans KR"
+    MONO_FONT = "Consolas"
+
 DARK_THEME_QSS = """
 /* Main Color System */
 QMainWindow, QWidget {
