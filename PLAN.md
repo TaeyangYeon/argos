@@ -894,6 +894,11 @@ Library-Agnostic 출력. OpenCV, Keyence, Cognex, Halcon, MIL 어디서도 적�
 □ git commit
 ```
 
+**완료 내용:**
+- core/align/__init__.py: PatternAlignEngine import
+- core/align/pattern_align.py: IAlignEngine 구현, TM_CCOEFF_NORMED 매칭, ROI 지원, 4섹션 설계 문서 자동 생성
+- tests/unit/test_step27_pattern_align.py: 9개 테스트 케이스 (총 11개, 전원 통과)
+
 ---
 
 ### Step 28 — Caliper Align 엔진
