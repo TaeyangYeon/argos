@@ -12,6 +12,7 @@ from PyQt6.QtCore import Qt, QTimer
 from PyQt6.QtGui import QFont
 
 from .base_page import BasePage, PageHeader
+from .align_tab import AlignTab
 from ui.components.sidebar import PageID
 from core.analyzers.feature_analyzer import FullFeatureAnalysis
 
@@ -566,14 +567,9 @@ class ResultPage(BasePage):
         self._feature_tab = FeatureTab()
         self._tab_widget.addTab(self._feature_tab, "이미지 특성")
         
-        # Align results tab (placeholder)
-        align_tab = QWidget()
-        align_layout = QVBoxLayout(align_tab)
-        align_label = QLabel("Align 결과 — 준비 중")
-        align_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        align_label.setStyleSheet("color: #9E9E9E; font-size: 16px; padding: 40px;")
-        align_layout.addWidget(align_label)
-        self._tab_widget.addTab(align_tab, "Align 결과")
+        # Align results tab (fully implemented)
+        self._align_tab = AlignTab()
+        self._tab_widget.addTab(self._align_tab, "Align 결과")
         
         # Inspection results tab (placeholder)
         inspection_tab = QWidget()
@@ -614,4 +610,14 @@ class ResultPage(BasePage):
         
         # Switch to feature analysis tab
         self._tab_widget.setCurrentIndex(1)  # Index 1 is the "이미지 특성" tab
-        
+
+    def load_align_result(self, result) -> None:
+        """
+        Load AlignResult and switch to the Align 결과 tab.
+
+        Args:
+            result: AlignResult or FallbackAlignResult instance (or None).
+        """
+        self._align_tab.load_result(result)
+        self._tab_widget.setCurrentIndex(2)  # Index 2 is the "Align 결과" tab
+

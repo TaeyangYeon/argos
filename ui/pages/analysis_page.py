@@ -22,15 +22,16 @@ from ui.style import Colors, Fonts
 
 class AnalysisPage(BasePage):
     """분석 실행 페이지"""
-    
+
     # 시그널
     analysis_complete = pyqtSignal(object)   # FullFeatureAnalysis
+    align_completed = pyqtSignal(object)     # AlignResult (or FallbackAlignResult)
     navigate_to_result = pyqtSignal()
-    
+
     def __init__(self, image_store: ImageStore, parent=None):
         """
         분석 실행 페이지 초기화
-        
+
         Args:
             image_store: 이미지 스토어
             parent: 부모 위젯
@@ -41,6 +42,7 @@ class AnalysisPage(BasePage):
         self.inspection_purpose = None
         self.analysis_worker = None
         self.last_result = None
+        self._last_align_result = None
         
         # Now call parent init which will call setup_ui
         super().__init__(
@@ -457,17 +459,19 @@ class AnalysisPage(BasePage):
         
         # 워커 생성 및 시그널 연결
         self.analysis_worker = AnalysisWorker(
-            self.image_store, 
-            self.roi_config, 
-            self.inspection_purpose
+            self.image_store,
+            self.roi_config,
+            self.inspection_purpose,
+            ai_provider=None,  # ai_provider는 향후 툴바에서 주입
         )
-        
+
         # 워커 시그널 연결
         self.analysis_worker.step_started.connect(self.on_step_started)
         self.analysis_worker.step_finished.connect(self.on_step_finished)
         self.analysis_worker.step_failed.connect(self.on_step_failed)
         self.analysis_worker.log_message.connect(self.on_log_message)
         self.analysis_worker.analysis_complete.connect(self.on_analysis_complete)
+        self.analysis_worker.align_complete.connect(self._on_align_complete)
         self.analysis_worker.analysis_failed.connect(self.on_analysis_failed)
         
         # 워커 시작
@@ -504,16 +508,21 @@ class AnalysisPage(BasePage):
         """로그 메시지 처리"""
         self.log_viewer.append_log(level, message)
     
+    def _on_align_complete(self, result) -> None:
+        """Align 완료 처리 — align_completed 시그널로 ResultPage에 전달"""
+        self._last_align_result = result
+        self.align_completed.emit(result)
+
     def on_analysis_complete(self, result: FullFeatureAnalysis):
         """분석 완료 처리"""
         self.last_result = result
         self.cleanup_worker()
-        
+
         # 버튼 상태 업데이트
         self.start_button.setEnabled(True)
         self.cancel_button.setEnabled(False)
         self.result_button.setEnabled(True)
-        
+
         # 시그널 발생 (페이지 전환 먼저, 데이터 로딩 나중)
         self.analysis_complete.emit(result)  # 데이터 로딩 나중
         self.navigate_to_result.emit()  # 페이지 전환 먼저
