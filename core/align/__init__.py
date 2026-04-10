@@ -3,6 +3,7 @@ from core.align.caliper_align import CaliperAlignEngine
 from core.align.feature_align import FeatureAlignEngine
 from core.align.contour_align import ContourAlignEngine
 from core.align.blob_align import BlobAlignEngine
+from core.align.align_engine import AlignFallbackChain
 
 __all__ = [
     "PatternAlignEngine",
@@ -10,4 +11,5 @@ __all__ = [
     "FeatureAlignEngine",
     "ContourAlignEngine",
     "BlobAlignEngine",
+    "AlignFallbackChain",
 ]

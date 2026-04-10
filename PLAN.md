@@ -987,6 +987,11 @@ Library-Agnostic 출력. OpenCV, Keyence, Cognex, Halcon, MIL 어디서도 적�
 □ git commit
 ```
 
+**완료 내용:**
+- core/align/align_engine.py: AlignFallbackChain 구현 완료. Pattern → Caliper → (AI 판단) → Feature/Contour/Blob 순 실행, 첫 성공 시 중단, 실패 원인 누적, design_doc(chain_stages_tried, winning_strategy, failure_reasons, ai_strategy_decision)
+- core/align/__init__.py: AlignFallbackChain export 추가
+- tests/unit/test_step30_align_fallback.py: 12개 테스트 케이스 (전원 통과)
+
 ---
 
 ### Step 31 — Align 결과 UI 표시
