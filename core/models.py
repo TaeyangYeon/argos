@@ -86,3 +86,18 @@ class InspectionPurpose:
     measurement_unit: str = "" # 측정 단위 (mm, px, %)
     tolerance: str = ""        # 허용 공차
     created_at: str = field(default_factory=lambda: datetime.now().isoformat())
+
+
+@dataclass
+class InspectionCandidate:
+    """A single inspection algorithm candidate with full design documentation."""
+    candidate_id: str
+    method: str                    # e.g. "blob"
+    params: dict                   # numeric thresholds used
+    design_doc: dict               # 4-section structure: layout / parameters / result_calculation / rationale
+    library_mapping: dict          # Keyence / Cognex / Halcon / MIL parameter name table
+    ok_pass_rate: float            # fraction of OK images that pass [0.0, 1.0]
+    ng_detect_rate: float          # fraction of NG images where anomaly detected [0.0, 1.0]
+    score: float                   # (ok_pass_rate * w1) + (ng_detect_rate * w2)
+    rationale: str                 # human-readable selection rationale
+    overlay_image_path: Optional[str] = field(default=None)  # path to overlay PNG
