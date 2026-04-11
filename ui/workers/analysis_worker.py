@@ -50,6 +50,7 @@ class AnalysisWorker(QThread):
         self._cancel_flag = False
         self.feature_result = None
         self._align_result = None
+        self._results: dict = {}
 
     def cancel(self):
         """분석 작업 취소"""
@@ -217,6 +218,7 @@ class AnalysisWorker(QThread):
                     failure_reason="ALIGN_OK 이미지가 없어 Align을 실행할 수 없습니다",
                 )
                 self._align_result = failed_result
+                self._results["align"] = failed_result
                 self.align_complete.emit(failed_result)
                 elapsed_time = time.time() - start_time
                 self.step_finished.emit(step_name, elapsed_time)
@@ -249,6 +251,7 @@ class AnalysisWorker(QThread):
             # ── Run the chain ──────────────────────────────────────────────
             align_result = chain.run(image)
             self._align_result = align_result
+            self._results["align"] = align_result
 
             self.log_message.emit(
                 "INFO",
@@ -277,6 +280,7 @@ class AnalysisWorker(QThread):
                 failure_reason=error_msg,
             )
             self._align_result = failed_result
+            self._results["align"] = failed_result
             self.align_complete.emit(failed_result)
 
             self.step_failed.emit(step_name, error_msg)
