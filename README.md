@@ -44,7 +44,7 @@ pytest
 
 ```
 argos/
-├── core/           # Core algorithms and engines
+├── core/          # Core algorithms and engines
 ├── ui/            # User interface components
 ├── config/        # Configuration and settings
 ├── tests/         # Test suites
