@@ -6,7 +6,7 @@ AI-powered vision algorithm design agent for automated inspection system develop
 
 Argos is an intelligent agent that automatically designs vision algorithms for alignment and inspection tasks. It takes OK/NG sample images, ROI specifications, and inspection objectives to generate optimized algorithms with detailed parameters for various vision libraries (Keyence, Cognex, Halcon, MIL).
 
-## Installation
+## Installation 
 
 ```bash
 pip install -r requirements.txt
