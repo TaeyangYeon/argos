@@ -1,9 +1,9 @@
 # Argos — 개발 진행 현황
 
-마지막 업데이트: 2026-04-11
+마지막 업데이트: 2026-04-14
 
 ## 전체 진행률
-- 완료: 35 / 51 Steps
+- 완료: 36 / 51 Steps
 - 현재 Phase: Phase 5 — Inspection 엔진
 
 ---
@@ -61,7 +61,7 @@
 | 33 | Blob 기반 Inspection 엔진 | ✅ 완료 | 2026-04-11 | BlobInspectionEngine 구현 완료. 3종 Candidate, 4섹션 설계 문서, 라이브러리 매핑, 오버레이 이미지, 16개 테스트 |
 | 34 | AnalysisWorker Align 단계 연동 | ✅ 완료 | 2026-04-11 | AlignFallbackChain 실제 연동 완료. 14개 테스트 |
 | 35 | Circular Caliper Inspection 엔진 | ✅ 완료 | 2026-04-11 | CircularCaliperInspectionEngine 구현. LSQ Circle Fit, 3σ 이상치 제거, 4섹션 설계 문서, 20개 테스트 |
-| 36 | Linear Caliper Inspection 엔진 | 🔲 대기 | - | |
+| 36 | Linear Caliper Inspection 엔진 | ✅ 완료 | 2026-04-14 | LinearCaliperInspectionEngine 구현. 1D Sobel 에지 검출, 폭/직진도/평행도 측정, 3σ 이상치 제거, 4섹션 설계 문서, 25개 테스트 |
 | 37 | Pattern 기반 Inspection 엔진 | 🔲 대기 | - | |
 | 38 | Dynamic Candidate 생성기 | 🔲 대기 | - | |
 | 39 | 평가 엔진 (Evaluation) | 🔲 대기 | - | |

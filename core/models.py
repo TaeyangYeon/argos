@@ -40,6 +40,9 @@ class InspectionResult:
     is_ok: bool
     failure_reason: Optional[str] = field(default=None)
     overlay_image: Optional[np.ndarray] = field(default=None)
+    candidates: list = field(default_factory=list)
+    best_candidate: Optional[object] = field(default=None)
+    error_message: Optional[str] = field(default=None)
 
 
 @dataclass
