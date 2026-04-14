@@ -3,7 +3,7 @@
 마지막 업데이트: 2026-04-14
 
 ## 전체 진행률
-- 완료: 39 / 51 Steps
+- 완료: 40 / 51 Steps
 - 현재 Phase: Phase 5 — Inspection 엔진
 
 ---
@@ -65,7 +65,7 @@
 | 37 | Pattern 기반 Inspection 엔진 | ✅ 완료 | 2026-04-14 | PatternInspectionEngine 구현. 차분 기반 결함 검사, 3종 Candidate, 4섹션 설계 문서, 라이브러리 매핑, 오버레이 이미지, 37개 테스트 |
 | 38 | Dynamic Candidate 생성기 | ✅ 완료 | 2026-04-14 | DynamicCandidateGenerator 구현. rule-based 4종 선택 규칙, AI 폴백, EngineCandidate 정렬, 17개 테스트 |
 | 39 | 평가 엔진 (Evaluation) | ✅ 완료 | 2026-04-14 | InspectionEvaluator 구현. per-image 격리, FP/FN 추적, 경계선 경고, 29개 테스트 |
-| 40 | 최적화 루프 및 Best Candidate 선택 | 🔲 대기 | - | |
+| 40 | 최적화 루프 및 Best Candidate 선택 | ✅ 완료 | 2026-04-14 | InspectionOptimizer 구현. ENGINE_REGISTRY 디스패치, 예외 격리, 20개 테스트 |
 | 41 | Failure 분석 | 🔲 대기 | - | |
 | 42 | Feasibility Analysis 및 기술 수준 판단 | 🔲 대기 | - | |
 | 43 | Inspection 통합 테스트 | 🔲 대기 | - | |

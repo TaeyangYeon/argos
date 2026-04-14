@@ -104,3 +104,12 @@ class InspectionCandidate:
     score: float                   # (ok_pass_rate * w1) + (ng_detect_rate * w2)
     rationale: str                 # human-readable selection rationale
     overlay_image_path: Optional[str] = field(default=None)  # path to overlay PNG
+
+
+@dataclass
+class OptimizationResult:
+    """Result from the InspectionOptimizer loop (Step 40)."""
+    best_candidate: object                    # EngineCandidate with highest score
+    best_evaluation: EvaluationResult
+    all_results: list = field(default_factory=list)  # list[tuple[EngineCandidate, EvaluationResult]] sorted by score desc
+    optimization_log: list = field(default_factory=list)  # list[str]
