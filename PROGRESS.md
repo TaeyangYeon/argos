@@ -3,7 +3,7 @@
 마지막 업데이트: 2026-04-14
 
 ## 전체 진행률
-- 완료: 40 / 51 Steps
+- 완료: 41 / 51 Steps
 - 현재 Phase: Phase 5 — Inspection 엔진
 
 ---
@@ -66,7 +66,7 @@
 | 38 | Dynamic Candidate 생성기 | ✅ 완료 | 2026-04-14 | DynamicCandidateGenerator 구현. rule-based 4종 선택 규칙, AI 폴백, EngineCandidate 정렬, 17개 테스트 |
 | 39 | 평가 엔진 (Evaluation) | ✅ 완료 | 2026-04-14 | InspectionEvaluator 구현. per-image 격리, FP/FN 추적, 경계선 경고, 29개 테스트 |
 | 40 | 최적화 루프 및 Best Candidate 선택 | ✅ 완료 | 2026-04-14 | InspectionOptimizer 구현. ENGINE_REGISTRY 디스패치, 예외 격리, 20개 테스트 |
-| 41 | Failure 분석 | 🔲 대기 | - | |
+| 41 | Failure 분석 | ✅ 완료 | 2026-04-14 | FailureAnalyzer 구현. OpenCV FP/FN 오버레이, AI 원인 분석, 예외 격리, 26개 테스트 |
 | 42 | Feasibility Analysis 및 기술 수준 판단 | 🔲 대기 | - | |
 | 43 | Inspection 통합 테스트 | 🔲 대기 | - | |
 | 44 | 결과 뷰어 레이아웃 | 🔲 대기 | - | |

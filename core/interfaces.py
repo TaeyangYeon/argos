@@ -6,17 +6,20 @@ Dependency Inversion - all concrete implementations depend on these abstractions
 """
 
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 import numpy as np
 
 if TYPE_CHECKING:
     from .models import (
         AlignResult,
-        EvaluationResult, 
+        EvaluationResult,
+        FailureAnalysisResult,
         FeatureAnalysisSummary,
+        InspectionPurpose,
         InspectionResult,
-        ROIConfig
+        OptimizationResult,
+        ROIConfig,
     )
 
 
@@ -115,26 +118,50 @@ class IEvaluationEngine(ABC):
 
 class IFeatureAnalyzer(ABC):
     """Abstract interface for image feature analysis."""
-    
+
     @abstractmethod
     def analyze(self, image: np.ndarray) -> "FeatureAnalysisSummary":
         """
         Analyze image features to determine optimal algorithm candidates.
-        
+
         Args:
             image: Input image to analyze
-            
+
         Returns:
             FeatureAnalysisSummary with extracted features and characteristics
         """
         pass
-    
+
     @abstractmethod
     def get_summary(self) -> str:
         """
         Get human-readable summary of the analysis.
-        
+
         Returns:
             Text summary suitable for AI provider input
+        """
+        pass
+
+
+class IFailureAnalyzer(ABC):
+    """Abstract interface for failure analysis of inspection results."""
+
+    @abstractmethod
+    def analyze(
+        self,
+        optimization_result: "OptimizationResult",
+        purpose: "Optional[InspectionPurpose]" = None,
+    ) -> "FailureAnalysisResult":
+        """
+        Analyse the failure cases from an OptimizationResult.
+
+        Args:
+            optimization_result: Result from InspectionOptimizer containing the
+                                  best candidate and its EvaluationResult.
+            purpose:             Optional InspectionPurpose used to enrich the
+                                 AI prompt with domain context.
+
+        Returns:
+            FailureAnalysisResult with overlay paths, counts, and AI analysis.
         """
         pass

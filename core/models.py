@@ -113,3 +113,14 @@ class OptimizationResult:
     best_evaluation: EvaluationResult
     all_results: list = field(default_factory=list)  # list[tuple[EngineCandidate, EvaluationResult]] sorted by score desc
     optimization_log: list = field(default_factory=list)  # list[str]
+
+
+@dataclass
+class FailureAnalysisResult:
+    """Result from FailureAnalyzer (Step 41)."""
+    fp_overlay_paths: list    # list[str] — absolute paths to FP overlay images
+    fn_overlay_paths: list    # list[str] — absolute paths to FN overlay images
+    cause_summary: str        # AI-generated failure cause summary
+    improvement_directions: list  # list[str] — AI-generated improvement suggestions
+    fp_count: int             # number of false-positive images
+    fn_count: int             # number of false-negative images
