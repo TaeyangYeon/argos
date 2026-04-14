@@ -77,28 +77,38 @@ class IInspectionEngine(ABC):
 
 
 class IEvaluationEngine(ABC):
-    """Abstract interface for evaluation of inspection results."""
-    
+    """Abstract interface for evaluation of inspection engine candidates."""
+
     @abstractmethod
-    def evaluate(self, results: list["InspectionResult"]) -> "EvaluationResult":
+    def evaluate(
+        self,
+        candidate: object,
+        ok_images: list,
+        ng_images: list,
+        settings: object,
+    ) -> "EvaluationResult":
         """
-        Evaluate multiple inspection results to determine best algorithm.
-        
+        Evaluate a single engine candidate against OK and NG image sets.
+
         Args:
-            results: List of inspection results from different algorithms
-            
+            candidate: EngineCandidate with engine_class and engine_name fields.
+            ok_images: List of numpy arrays representing OK (pass) images.
+            ng_images: List of numpy arrays representing NG (fail) images.
+            settings:  Settings instance carrying w1, w2, score_threshold,
+                       and margin_warning.
+
         Returns:
-            EvaluationResult with performance metrics and best strategy
+            EvaluationResult with performance metrics and best strategy.
         """
         pass
-    
+
     @abstractmethod
     def get_score(self) -> float:
         """
-        Get the current evaluation score.
-        
+        Return the final_score from the most recent evaluate() call.
+
         Returns:
-            Current score value between 0.0 and 100.0
+            Score in [0.0, 100.0]; 0.0 before the first evaluation.
         """
         pass
 
