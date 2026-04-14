@@ -365,7 +365,8 @@ Library-Agnostic 출력. OpenCV, Keyence, Cognex, Halcon, MIL 어디서도 적�
 - ✅ Step 35 완료 — CircularCaliperInspectionEngine
 - ✅ Step 36 완료 — LinearCaliperInspectionEngine
 - ✅ Step 37 완료 — PatternInspectionEngine
-- 🔲 Step 38부터 진행 예정
+- ✅ Step 38 완료 — DynamicCandidateGenerator
+- 🔲 Step 39부터 진행 예정
 
 ### Step 완료 현황
 

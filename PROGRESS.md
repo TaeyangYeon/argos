@@ -3,7 +3,7 @@
 마지막 업데이트: 2026-04-14
 
 ## 전체 진행률
-- 완료: 37 / 51 Steps
+- 완료: 38 / 51 Steps
 - 현재 Phase: Phase 5 — Inspection 엔진
 
 ---
@@ -63,7 +63,7 @@
 | 35 | Circular Caliper Inspection 엔진 | ✅ 완료 | 2026-04-11 | CircularCaliperInspectionEngine 구현. LSQ Circle Fit, 3σ 이상치 제거, 4섹션 설계 문서, 20개 테스트 |
 | 36 | Linear Caliper Inspection 엔진 | ✅ 완료 | 2026-04-14 | LinearCaliperInspectionEngine 구현. 1D Sobel 에지 검출, 폭/직진도/평행도 측정, 3σ 이상치 제거, 4섹션 설계 문서, 25개 테스트 |
 | 37 | Pattern 기반 Inspection 엔진 | ✅ 완료 | 2026-04-14 | PatternInspectionEngine 구현. 차분 기반 결함 검사, 3종 Candidate, 4섹션 설계 문서, 라이브러리 매핑, 오버레이 이미지, 37개 테스트 |
-| 38 | Dynamic Candidate 생성기 | 🔲 대기 | - | |
+| 38 | Dynamic Candidate 생성기 | ✅ 완료 | 2026-04-14 | DynamicCandidateGenerator 구현. rule-based 4종 선택 규칙, AI 폴백, EngineCandidate 정렬, 17개 테스트 |
 | 39 | 평가 엔진 (Evaluation) | 🔲 대기 | - | |
 | 40 | 최적화 루프 및 Best Candidate 선택 | 🔲 대기 | - | |
 | 41 | Failure 분석 | 🔲 대기 | - | |
