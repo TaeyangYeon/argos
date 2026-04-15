@@ -6,10 +6,14 @@
 import time
 from PyQt6.QtCore import QThread, pyqtSignal
 
+import logging
+
 from core.image_store import ImageStore, ImageType
 from core.models import ROIConfig, InspectionPurpose, AlignResult
 from core.analyzers.feature_analyzer import FeatureAnalyzer, FullFeatureAnalysis
 from ui.components.progress_steps import AnalysisStep
+
+worker_logger = logging.getLogger("argos.ui.analysis_worker")
 
 
 class AnalysisWorker(QThread):
@@ -22,6 +26,8 @@ class AnalysisWorker(QThread):
     log_message = pyqtSignal(str, str)      # level, message
     analysis_complete = pyqtSignal(object)  # FullFeatureAnalysis
     align_complete = pyqtSignal(object)     # AlignResult (or FallbackAlignResult)
+    inspection_complete = pyqtSignal(object)  # OptimizationResult
+    evaluation_complete = pyqtSignal(object)  # dict with failure_result + feasibility_result
     analysis_failed = pyqtSignal(str)       # error_message
 
     def __init__(
@@ -288,7 +294,7 @@ class AnalysisWorker(QThread):
 
     def _execute_inspection_design(self) -> bool:
         """
-        검사 설계 단계 실행 (placeholder)
+        검사 설계 단계 실행 — DynamicCandidateGenerator + InspectionOptimizer
 
         Returns:
             성공 여부
@@ -298,22 +304,93 @@ class AnalysisWorker(QThread):
 
         step_name = AnalysisStep.INSPECTION_DESIGN.value
         self.step_started.emit(step_name)
-        self.log_message.emit("INFO", "검사 설계 단계 (Step 27-28에서 구현 예정)")
+        self.log_message.emit("INFO", "검사 설계 단계를 시작합니다")
 
         start_time = time.time()
 
-        # Placeholder 실행
-        time.sleep(0.1)
+        try:
+            # ── Check for NG images ──────────────────────────────────────
+            ok_images_meta = self.image_store.get_all(ImageType.INSPECTION_OK)
+            ng_images_meta = self.image_store.get_all(ImageType.INSPECTION_NG)
 
-        elapsed_time = time.time() - start_time
-        self.step_finished.emit(step_name, elapsed_time)
-        self.log_message.emit("SUCCESS", "검사 설계 단계 완료 (placeholder)")
+            if not ng_images_meta:
+                self.log_message.emit(
+                    "WARNING",
+                    "NG 이미지가 없습니다 — Inspection 설계를 건너뜁니다. "
+                    "정확한 검사 알고리즘 평가를 위해 NG 이미지를 추가하세요."
+                )
+                self._results["inspection"] = None
+                elapsed_time = time.time() - start_time
+                self.step_finished.emit(step_name, elapsed_time)
+                self.log_message.emit("SUCCESS", f"검사 설계 단계 완료 — NG 없음 ({elapsed_time:.1f}초)")
+                return True
 
-        return True
+            # ── Check for feature analysis result ────────────────────────
+            if self.feature_result is None:
+                error_msg = "특성 분석 결과가 없어 검사 설계를 진행할 수 없습니다"
+                self.log_message.emit("ERROR", error_msg)
+                self.step_failed.emit(step_name, error_msg)
+                return False
+
+            # ── Load images ──────────────────────────────────────────────
+            ok_arrays = [self.image_store.load_image(m.id) for m in ok_images_meta]
+            ng_arrays = [self.image_store.load_image(m.id) for m in ng_images_meta]
+            self.log_message.emit(
+                "INFO",
+                f"이미지 로드 완료: OK {len(ok_arrays)}장, NG {len(ng_arrays)}장"
+            )
+
+            # ── Ensure InspectionPurpose exists ──────────────────────────
+            purpose = self.inspection_purpose or InspectionPurpose()
+
+            # ── Step 3a: Generate candidates ─────────────────────────────
+            from core.inspection.candidate_generator import DynamicCandidateGenerator
+
+            self.log_message.emit("INFO", "후보 엔진 생성 중...")
+            generator = DynamicCandidateGenerator(ai_provider=self._ai_provider)
+            candidates = generator.generate(self.feature_result, purpose)
+            self.log_message.emit(
+                "INFO",
+                f"후보 엔진 {len(candidates)}개 생성 완료: "
+                + ", ".join(c.engine_name for c in candidates)
+            )
+
+            # ── Step 3b: Optimize (evaluate each candidate) ──────────────
+            from core.inspection.optimizer import InspectionOptimizer
+            from config.settings import Settings
+
+            self.log_message.emit("INFO", "최적화 루프 실행 중...")
+            optimizer = InspectionOptimizer()
+            settings = Settings()
+            opt_result = optimizer.run(candidates, ok_arrays, ng_arrays, settings)
+
+            best_name = getattr(opt_result.best_candidate, "engine_name", "Unknown")
+            best_score = getattr(opt_result.best_evaluation, "final_score", 0.0)
+            self.log_message.emit(
+                "INFO",
+                f"최적화 완료 — 최적 엔진: {best_name}, 점수: {best_score:.1f}"
+            )
+
+            self._results["inspection"] = opt_result
+            self.inspection_complete.emit(opt_result)
+
+            elapsed_time = time.time() - start_time
+            self.step_finished.emit(step_name, elapsed_time)
+            self.log_message.emit("SUCCESS", f"검사 설계 완료 ({elapsed_time:.1f}초)")
+            return True
+
+        except Exception as e:
+            elapsed_time = time.time() - start_time
+            error_msg = f"검사 설계 중 오류 발생: {str(e)}"
+            worker_logger.error(error_msg, exc_info=True)
+            self.log_message.emit("ERROR", error_msg)
+            self._results["inspection"] = None
+            self.step_failed.emit(step_name, error_msg)
+            return False
 
     def _execute_evaluation(self) -> bool:
         """
-        평가 단계 실행 (placeholder)
+        평가 단계 실행 — FailureAnalyzer + FeasibilityAnalyzer
 
         Returns:
             성공 여부
@@ -323,15 +400,80 @@ class AnalysisWorker(QThread):
 
         step_name = AnalysisStep.EVALUATION.value
         self.step_started.emit(step_name)
-        self.log_message.emit("INFO", "평가 단계 (Step 27-28에서 구현 예정)")
+        self.log_message.emit("INFO", "평가 단계를 시작합니다")
 
         start_time = time.time()
 
-        # Placeholder 실행
-        time.sleep(0.1)
+        try:
+            opt_result = self._results.get("inspection")
 
-        elapsed_time = time.time() - start_time
-        self.step_finished.emit(step_name, elapsed_time)
-        self.log_message.emit("SUCCESS", "평가 단계 완료 (placeholder)")
+            if opt_result is None:
+                self.log_message.emit(
+                    "WARNING",
+                    "Inspection 결과가 없습니다 — 평가 단계를 건너뜁니다"
+                )
+                self._results["evaluation"] = None
+                elapsed_time = time.time() - start_time
+                self.step_finished.emit(step_name, elapsed_time)
+                self.log_message.emit("SUCCESS", f"평가 단계 완료 — Inspection 없음 ({elapsed_time:.1f}초)")
+                return True
 
-        return True
+            purpose = self.inspection_purpose or InspectionPurpose()
+
+            # ── Step 4a: Failure Analysis ────────────────────────────────
+            from core.evaluation.failure_analyzer import FailureAnalyzer
+
+            self.log_message.emit("INFO", "실패 분석 실행 중...")
+            failure_analyzer = FailureAnalyzer(
+                ai_provider=self._ai_provider,
+            )
+            failure_result = failure_analyzer.analyze(opt_result, purpose)
+            self.log_message.emit(
+                "INFO",
+                f"실패 분석 완료 — FP: {failure_result.fp_count}건, "
+                f"FN: {failure_result.fn_count}건"
+            )
+
+            # ── Step 4b: Feasibility Analysis ────────────────────────────
+            from core.evaluation.feasibility_analyzer import FeasibilityAnalyzer
+            from config.settings import Settings
+
+            self.log_message.emit("INFO", "기술 수준 판단 실행 중...")
+            feasibility_analyzer = FeasibilityAnalyzer(
+                ai_provider=self._ai_provider,
+            )
+            settings = Settings()
+            best_eval = opt_result.best_evaluation
+            best_score = getattr(best_eval, "final_score", 0.0)
+
+            feasibility_result = feasibility_analyzer.analyze(
+                best_score=best_score,
+                threshold=settings.score_threshold,
+                evaluation_result=best_eval,
+                inspection_purpose=purpose,
+            )
+            self.log_message.emit(
+                "INFO",
+                f"기술 수준 판단 완료 — 권장: {feasibility_result.recommended_approach}"
+            )
+
+            eval_results = {
+                "failure_result": failure_result,
+                "feasibility_result": feasibility_result,
+            }
+            self._results["evaluation"] = eval_results
+            self.evaluation_complete.emit(eval_results)
+
+            elapsed_time = time.time() - start_time
+            self.step_finished.emit(step_name, elapsed_time)
+            self.log_message.emit("SUCCESS", f"평가 단계 완료 ({elapsed_time:.1f}초)")
+            return True
+
+        except Exception as e:
+            elapsed_time = time.time() - start_time
+            error_msg = f"평가 중 오류 발생: {str(e)}"
+            worker_logger.error(error_msg, exc_info=True)
+            self.log_message.emit("ERROR", error_msg)
+            self._results["evaluation"] = None
+            self.step_failed.emit(step_name, error_msg)
+            return False
