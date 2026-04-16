@@ -104,9 +104,16 @@ class AnalysisWorker(QThread):
             if not self._execute_evaluation():
                 return
 
-            # 모든 단계 완료
+            # 모든 단계 완료 — aggregate dict 생성
             self.log_message.emit("SUCCESS", "모든 분석 단계가 완료되었습니다")
-            self.analysis_complete.emit(self.feature_result)
+            aggregate = {
+                "feature": self.feature_result,
+                "align": self._results.get("align"),
+                "inspection": self._results.get("inspection"),
+                "evaluation": self._results.get("evaluation"),
+                "inspection_purpose": self.inspection_purpose,
+            }
+            self.analysis_complete.emit(aggregate)
 
         except Exception as e:
             error_msg = f"분석 중 예기치 않은 오류가 발생했습니다: {str(e)}"

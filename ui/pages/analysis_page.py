@@ -513,9 +513,12 @@ class AnalysisPage(BasePage):
         self._last_align_result = result
         self.align_completed.emit(result)
 
-    def on_analysis_complete(self, result: FullFeatureAnalysis):
-        """분석 완료 처리"""
-        self.last_result = result
+    def on_analysis_complete(self, aggregate):
+        """분석 완료 처리 — aggregate dict 또는 FullFeatureAnalysis를 전달받음"""
+        if isinstance(aggregate, dict):
+            self.last_result = aggregate.get("feature")
+        else:
+            self.last_result = aggregate
         self.cleanup_worker()
 
         # 버튼 상태 업데이트
@@ -524,7 +527,7 @@ class AnalysisPage(BasePage):
         self.result_button.setEnabled(True)
 
         # 시그널 발생 (페이지 전환 먼저, 데이터 로딩 나중)
-        self.analysis_complete.emit(result)  # 데이터 로딩 나중
+        self.analysis_complete.emit(aggregate)  # 데이터 로딩 나중
         self.navigate_to_result.emit()  # 페이지 전환 먼저
     
     def on_analysis_failed(self, error_message: str):

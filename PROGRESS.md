@@ -1,9 +1,9 @@
 # Argos — 개발 진행 현황
 
-마지막 업데이트: 2026-04-15
+마지막 업데이트: 2026-04-16
 
 ## 전체 진행률
-- 완료: 43 / 51 Steps
+- 완료: 44 / 51 Steps
 - 현재 Phase: Phase 6 — 결과 뷰어 및 출력
 
 ---
@@ -69,7 +69,7 @@
 | 41 | Failure 분석 | ✅ 완료 | 2026-04-14 | FailureAnalyzer 구현. OpenCV FP/FN 오버레이, AI 원인 분석, 예외 격리, 26개 테스트 |
 | 42 | Feasibility Analysis 및 기술 수준 판단 | ✅ 완료 | 2026-04-15 | FeasibilityAnalyzer 구현. Rule-based 판정, AI EL/DL 결정, 휴리스틱 fallback, 29개 테스트 |
 | 43 | Inspection 통합 테스트 및 AnalysisWorker 연동 | ✅ 완료 | 2026-04-15 | E2E 통합 테스트 10개, AnalysisWorker Inspection/Evaluation 단계 연동, NG=0 시나리오 처리 |
-| 44 | 결과 뷰어 레이아웃 | 🔲 대기 | - | |
+| 44 | 결과 뷰어 레이아웃 | ✅ 완료 | 2026-04-16 | 5-tab 결과 뷰어 완성, SummaryTab 신설, Inspection/Feasibility 스켈레톤, load_all 디스패처, 10개 테스트 |
 | 45 | Inspection 결과 카드 및 파라미터 테이블 | 🔲 대기 | - | |
 | 46 | Failure 케이스 뷰어 | 🔲 대기 | - | |
 | 47 | Feasibility 및 기술 수준 결과 표시 | 🔲 대기 | - | |
@@ -95,6 +95,7 @@
 | 2026-04-09 | 26 | [시그널 플로우 검증] analysis_complete 신호 체인 정상 확인 — [TRACE-1→2→3→4] 모든 단계 통과. 신호 연결 문제가 아닌 UI 렌더링 문제였음 확인. StatCard→QLabel 교체가 정답 |
 | 2026-04-09 | 26 | [버그] OK/NG 분리도 0% — worker가 analyze_ok_ng_separation() 미호출. Insp OK/NG 이미지 배열 로드 후 호출하도록 수정. 분리도 45.1% 정상 계산 확인 |
 | 2026-04-09 | 26 | [버그6] Pre-flight 검증 로직 오류 — 검사 유형에 상관없이 모든 이미지 타입(ALIGN_OK/INSP_OK/INSP_NG) 요구. InspectionPurpose.inspection_type 기반 vision-type-aware 검증으로 수정. Align-only("위치정렬")→ALIGN_OK만, Inspection-only→OK+NG, 혼합→전부 필요 |
+| 2026-04-16 | 44 | [변경] 탭 라벨 "이미지 특성" → "Feature 분석"으로 변경. load_align_result()에서 탭 전환 제거 — load_all()이 전체 탭 전환 담당. analysis_complete 시그널이 aggregate dict 발행하도록 변경 |
 
 ---
 

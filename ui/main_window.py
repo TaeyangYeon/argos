@@ -143,10 +143,7 @@ class MainWindow(QMainWindow):
             lambda: self._sidebar.navigate_to(PageID.RESULTS)
         )
         self._pages[PageID.ANALYSIS].analysis_complete.connect(
-            self._pages[PageID.RESULTS].load_result
-        )
-        self._pages[PageID.ANALYSIS].align_completed.connect(
-            self._pages[PageID.RESULTS].load_align_result
+            self._pages[PageID.RESULTS].load_all
         )
         
         # Connect ROI page signals to update analysis page

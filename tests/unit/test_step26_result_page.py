@@ -43,7 +43,7 @@ class TestResultPage:
         assert tab_widget.count() == 5
         
         # Check tab titles
-        expected_tabs = ["요약", "이미지 특성", "Align 결과", "Inspection 결과", "Feasibility"]
+        expected_tabs = ["요약", "Feature 분석", "Align 결과", "Inspection 결과", "Feasibility"]
         actual_tabs = [tab_widget.tabText(i) for i in range(tab_widget.count())]
         assert actual_tabs == expected_tabs
         

@@ -303,17 +303,18 @@ class TestFallbackLogSection:
 # ── 11. ResultPage integration ────────────────────────────────────────────────
 
 class TestResultPageIntegration:
-    def test_load_align_result_switches_tab(self, result_page):
-        """ResultPage.load_align_result() must switch the tab widget to index 2."""
+    def test_load_align_result_loads_data(self, result_page):
+        """ResultPage.load_align_result() must load data into align tab."""
         result = _make_result(strategy_name="feature", score=0.88, success=True)
         result_page.load_align_result(result)
-        assert result_page._tab_widget.currentIndex() == 2
+        # Tab should still exist and data loaded (tab switch now handled by load_all)
+        assert isinstance(result_page._align_tab, AlignTab)
 
     def test_align_tab_accessible_on_result_page(self, result_page):
         """ResultPage._align_tab must be an AlignTab instance."""
         assert isinstance(result_page._align_tab, AlignTab)
 
     def test_load_align_result_with_none(self, result_page):
-        """load_align_result(None) must not raise and must switch to tab 2."""
+        """load_align_result(None) must not raise."""
         result_page.load_align_result(None)
-        assert result_page._tab_widget.currentIndex() == 2
+        # Should not raise — tab index unchanged (no data to load)

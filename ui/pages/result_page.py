@@ -13,6 +13,9 @@ from PyQt6.QtGui import QFont
 
 from .base_page import BasePage, PageHeader
 from .align_tab import AlignTab
+from .summary_tab import SummaryTab
+from .inspection_tab import InspectionTab
+from .feasibility_tab import FeasibilityTab
 from ui.components.sidebar import PageID
 from core.analyzers.feature_analyzer import FullFeatureAnalysis
 
@@ -554,40 +557,25 @@ class ResultPage(BasePage):
         
     def _create_tabs(self) -> None:
         """Create all result tabs."""
-        # Summary tab (placeholder)
-        summary_tab = QWidget()
-        summary_layout = QVBoxLayout(summary_tab)
-        summary_label = QLabel("Align/Inspection 완료 후 표시됩니다")
-        summary_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        summary_label.setStyleSheet("color: #9E9E9E; font-size: 16px; padding: 40px;")
-        summary_layout.addWidget(summary_label)
-        self._tab_widget.addTab(summary_tab, "요약")
-        
-        # Feature analysis tab (fully implemented)
+        # 1. 요약 tab
+        self._summary_tab = SummaryTab()
+        self._tab_widget.addTab(self._summary_tab, "요약")
+
+        # 2. Feature 분석 tab (fully implemented)
         self._feature_tab = FeatureTab()
-        self._tab_widget.addTab(self._feature_tab, "이미지 특성")
-        
-        # Align results tab (fully implemented)
+        self._tab_widget.addTab(self._feature_tab, "Feature 분석")
+
+        # 3. Align 결과 tab (fully implemented)
         self._align_tab = AlignTab()
         self._tab_widget.addTab(self._align_tab, "Align 결과")
-        
-        # Inspection results tab (placeholder)
-        inspection_tab = QWidget()
-        inspection_layout = QVBoxLayout(inspection_tab)
-        inspection_label = QLabel("Inspection 결과 — 준비 중")
-        inspection_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        inspection_label.setStyleSheet("color: #9E9E9E; font-size: 16px; padding: 40px;")
-        inspection_layout.addWidget(inspection_label)
-        self._tab_widget.addTab(inspection_tab, "Inspection 결과")
-        
-        # Feasibility tab (placeholder)
-        feasibility_tab = QWidget()
-        feasibility_layout = QVBoxLayout(feasibility_tab)
-        feasibility_label = QLabel("Feasibility 분석 — 준비 중")
-        feasibility_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        feasibility_label.setStyleSheet("color: #9E9E9E; font-size: 16px; padding: 40px;")
-        feasibility_layout.addWidget(feasibility_label)
-        self._tab_widget.addTab(feasibility_tab, "Feasibility")
+
+        # 4. Inspection 결과 tab (skeleton)
+        self._inspection_tab = InspectionTab()
+        self._tab_widget.addTab(self._inspection_tab, "Inspection 결과")
+
+        # 5. Feasibility tab (skeleton)
+        self._feasibility_tab = FeasibilityTab()
+        self._tab_widget.addTab(self._feasibility_tab, "Feasibility")
         
     def load_result(self, result: FullFeatureAnalysis) -> None:
         """
@@ -611,6 +599,18 @@ class ResultPage(BasePage):
         # Switch to feature analysis tab
         self._tab_widget.setCurrentIndex(1)  # Index 1 is the "이미지 특성" tab
 
+    def load_feature_result(self, result) -> None:
+        """
+        Load feature analysis result into the Feature 분석 tab.
+
+        Args:
+            result: FullFeatureAnalysis instance (or None).
+        """
+        if result is None:
+            return
+        self._pending_result = result
+        self._apply_result()
+
     def load_align_result(self, result) -> None:
         """
         Load AlignResult and switch to the Align 결과 tab.
@@ -618,6 +618,72 @@ class ResultPage(BasePage):
         Args:
             result: AlignResult or FallbackAlignResult instance (or None).
         """
+        if result is None:
+            return
         self._align_tab.load_result(result)
-        self._tab_widget.setCurrentIndex(2)  # Index 2 is the "Align 결과" tab
+
+    def load_summary(self, aggregate) -> None:
+        """
+        Fill the Summary tab from the aggregate dict.
+
+        Args:
+            aggregate: dict with feature/align/inspection/evaluation/inspection_purpose.
+        """
+        if aggregate is None:
+            return
+        self._summary_tab.load_data(aggregate)
+
+    def load_inspection_result(self, result) -> None:
+        """
+        Fill the Inspection 결과 tab skeleton.
+
+        Args:
+            result: OptimizationResult or None.
+        """
+        self._inspection_tab.load_data(result)
+
+    def load_feasibility_result(self, result) -> None:
+        """
+        Fill the Feasibility tab skeleton.
+
+        Args:
+            result: FeasibilityResult or None.
+        """
+        self._feasibility_tab.load_data(result)
+
+    def load_all(self, aggregate) -> None:
+        """
+        Convenience dispatcher — fills every tab from the aggregate dict.
+
+        Args:
+            aggregate: dict with keys: feature, align, inspection,
+                       evaluation (dict with failure_result/feasibility_result),
+                       inspection_purpose.
+        """
+        if aggregate is None:
+            return
+
+        # Summary
+        self.load_summary(aggregate)
+
+        # Feature
+        self.load_feature_result(aggregate.get("feature"))
+
+        # Align
+        self.load_align_result(aggregate.get("align"))
+
+        # Inspection
+        self.load_inspection_result(aggregate.get("inspection"))
+
+        # Feasibility
+        eval_dict = aggregate.get("evaluation")
+        feas = (
+            eval_dict.get("feasibility_result")
+            if isinstance(eval_dict, dict)
+            else None
+        )
+        self.load_feasibility_result(feas)
+
+        # Switch to summary tab
+        self._tab_widget.setCurrentIndex(0)
 
