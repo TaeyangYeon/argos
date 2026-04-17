@@ -1,9 +1,9 @@
 # Argos — 개발 진행 현황
 
-마지막 업데이트: 2026-04-16
+마지막 ��데이트: 2026-04-17
 
 ## 전체 진행률
-- 완료: 44 / 51 Steps
+- 완료: 45 / 51 Steps
 - 현재 Phase: Phase 6 — 결과 뷰어 및 출력
 
 ---
@@ -70,7 +70,7 @@
 | 42 | Feasibility Analysis 및 기술 수준 판단 | ✅ 완료 | 2026-04-15 | FeasibilityAnalyzer 구현. Rule-based 판정, AI EL/DL 결정, 휴리스틱 fallback, 29개 테스트 |
 | 43 | Inspection 통합 테스트 및 AnalysisWorker 연동 | ✅ 완료 | 2026-04-15 | E2E 통합 테스트 10개, AnalysisWorker Inspection/Evaluation 단계 연동, NG=0 시나리오 처리 |
 | 44 | 결과 뷰어 레이아웃 | ✅ 완료 | 2026-04-16 | 5-tab 결과 뷰어 완성, SummaryTab 신설, Inspection/Feasibility 스켈레톤, load_all 디스패처, 10개 테스트 |
-| 45 | Inspection 결과 카드 및 파라미터 테이블 | 🔲 대기 | - | |
+| 45 | Inspection 결과 카드 및 파라미터 테이블 | ✅ 완료 | 2026-04-17 | Best Candidate 요약 카드, 4섹션 파라미터 테이블, 라이브러리 매핑(3종 포맷), 오버레이 뷰어(줌), Candidate 비교 테이블, 31개 테스트 |
 | 46 | Failure 케이스 뷰어 | 🔲 대기 | - | |
 | 47 | Feasibility 및 기술 수준 결과 표시 | 🔲 대기 | - | |
 | 48 | 결과 내보내기 (Export) | 🔲 대기 | - | |
