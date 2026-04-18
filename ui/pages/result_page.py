@@ -4,9 +4,11 @@ This module provides the interface for viewing analysis results,
 algorithm parameters, and performance metrics.
 """
 
+from pathlib import Path
+
 from PyQt6.QtWidgets import (
     QVBoxLayout, QHBoxLayout, QLabel, QTabWidget, QWidget, QScrollArea,
-    QTextEdit, QProgressBar, QFrame, QListWidget, QListWidgetItem
+    QTextEdit, QProgressBar, QFrame, QListWidget, QListWidgetItem, QPushButton
 )
 from PyQt6.QtCore import Qt, QTimer
 from PyQt6.QtGui import QFont
@@ -511,18 +513,46 @@ class ResultPage(BasePage):
         """Initialize the result page."""
         super().__init__(PageID.RESULTS, "결과 보기", parent)
         self._pending_result = None
-        
+        self._results: dict | None = None
+
     def setup_ui(self) -> None:
         """Setup the result page UI."""
         layout = QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(0)
-        
-        # Page header
+
+        # Page header with export button
+        header_row = QHBoxLayout()
         header = PageHeader("결과 보기", "분석 결과, 파라미터 및 성능 지표")
-        layout.addWidget(header)
-        
-        
+        header_row.addWidget(header, 1)
+
+        self._export_btn = QPushButton("내보내기")
+        self._export_btn.setFixedHeight(36)
+        self._export_btn.setStyleSheet("""
+            QPushButton {
+                background-color: #1E88E5;
+                color: #FFFFFF;
+                border: none;
+                border-radius: 6px;
+                padding: 8px 20px;
+                font-weight: bold;
+                font-size: 13px;
+            }
+            QPushButton:hover {
+                background-color: #1565C0;
+            }
+            QPushButton:disabled {
+                background-color: #16213E;
+                color: #616161;
+            }
+        """)
+        self._export_btn.setEnabled(False)
+        self._export_btn.clicked.connect(self._on_export_clicked)
+        header_row.addWidget(self._export_btn)
+        header_row.setContentsMargins(0, 0, 16, 0)
+
+        layout.addLayout(header_row)
+
         # Tab widget
         self._tab_widget = QTabWidget()
         self._tab_widget.setStyleSheet("""
@@ -666,6 +696,61 @@ class ResultPage(BasePage):
         """
         self._failure_tab.load_result(result)
 
+    def _on_export_clicked(self) -> None:
+        """Handle export button click — open dialog and run exports."""
+        from ui.dialogs.export_dialog import ExportDialog
+
+        if self._results is None:
+            return
+
+        dialog = ExportDialog(self)
+        if dialog.exec() != ExportDialog.DialogCode.Accepted:
+            return
+
+        export_path = Path(dialog.selected_path)
+        errors: list[str] = []
+        successes: list[str] = []
+
+        if dialog.export_json:
+            try:
+                from core.export.json_exporter import ArgosJSONExporter
+                ArgosJSONExporter().export(self._results, export_path)
+                successes.append("JSON")
+            except Exception as e:
+                errors.append(f"JSON: {e}")
+
+        if dialog.export_pdf:
+            try:
+                from core.export.pdf_exporter import ArgosPDFExporter
+                ArgosPDFExporter().export(self._results, export_path)
+                successes.append("PDF")
+            except Exception as e:
+                errors.append(f"PDF: {e}")
+
+        if dialog.export_images:
+            try:
+                from core.export.image_exporter import ArgosImageExporter
+                saved = ArgosImageExporter().export(self._results, export_path)
+                successes.append(f"이미지({len(saved)})")
+            except Exception as e:
+                errors.append(f"이미지: {e}")
+
+        self._show_export_toast(successes, errors)
+
+    def _show_export_toast(self, successes: list[str], errors: list[str]) -> None:
+        """Show toast notification with export results."""
+        from ui.components.toast import ToastMessage
+
+        toast = ToastMessage(self.window())
+        if errors and not successes:
+            toast.show_error(f"내보내기 실패: {', '.join(errors)}")
+        elif errors:
+            toast.show_warning(
+                f"일부 완료: {', '.join(successes)} / 실패: {', '.join(errors)}"
+            )
+        else:
+            toast.show_success(f"내보내기 완료: {', '.join(successes)}")
+
     def load_all(self, aggregate) -> None:
         """
         Convenience dispatcher — fills every tab from the aggregate dict.
@@ -677,6 +762,9 @@ class ResultPage(BasePage):
         """
         if aggregate is None:
             return
+
+        self._results = aggregate
+        self._export_btn.setEnabled(True)
 
         # Summary
         self.load_summary(aggregate)

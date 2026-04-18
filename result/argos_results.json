@@ -1,0 +1,1073 @@
+{
+  "feature": {
+    "image_path": "/Users/geseuteu/vision-inspection-portfolio/01_training/data/raw/capsule/test/good/000.png",
+    "image_width": 1000,
+    "image_height": 1000,
+    "histogram": {
+      "mean_gray": 170.934473,
+      "std_gray": 64.16144586285654,
+      "min_gray": 14,
+      "max_gray": 238,
+      "dynamic_range": 224,
+      "peak_count": 6,
+      "distribution_type": "bimodal",
+      "ok_mean": null,
+      "ng_mean": null,
+      "separation_score": 0.56
+    },
+    "noise": {
+      "laplacian_variance": 12.626336989391003,
+      "snr_db": 51.75611227648296,
+      "noise_level": "Low",
+      "recommended_filter": "gaussian_blur",
+      "estimated_noise_std": 0.471678926779381
+    },
+    "edge": {
+      "mean_edge_strength": 11.634264194210857,
+      "max_edge_strength": 210.261741645978,
+      "edge_density": 0.002095,
+      "dominant_direction": "diagonal",
+      "horizontal_ratio": 0.41974845213766626,
+      "vertical_ratio": 0.5802515478623338,
+      "canny_threshold_suggestion": [
+        64,
+        129
+      ],
+      "is_suitable_for_caliper": false,
+      "caliper_direction_suggestion": "both"
+    },
+    "shape": {
+      "blob_count": 0,
+      "blobs": [],
+      "mean_blob_area": 0.0,
+      "mean_circularity": 0.0,
+      "has_circular_structure": true,
+      "detected_circles": [
+        {
+          "center_x": 217.0,
+          "center_y": 499.0,
+          "radius": 138.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 805.0,
+          "center_y": 497.0,
+          "radius": 131.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 232.0,
+          "center_y": 482.0,
+          "radius": 159.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 207.0,
+          "center_y": 518.0,
+          "radius": 116.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 819.0,
+          "center_y": 515.0,
+          "radius": 109.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 819.0,
+          "center_y": 483.0,
+          "radius": 110.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 291.0,
+          "center_y": 431.0,
+          "radius": 237.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 230.0,
+          "center_y": 520.0,
+          "radius": 163.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 296.0,
+          "center_y": 517.0,
+          "radius": 219.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 298.0,
+          "center_y": 451.0,
+          "radius": 232.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 265.0,
+          "center_y": 437.0,
+          "radius": 215.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 401.0,
+          "center_y": 445.0,
+          "radius": 192.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 223.0,
+          "center_y": 433.0,
+          "radius": 201.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 205.0,
+          "center_y": 481.0,
+          "radius": 118.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 327.0,
+          "center_y": 441.0,
+          "radius": 188.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 241.0,
+          "center_y": 463.0,
+          "radius": 180.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 296.0,
+          "center_y": 479.0,
+          "radius": 219.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 296.0,
+          "center_y": 403.0,
+          "radius": 262.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 401.0,
+          "center_y": 398.0,
+          "radius": 238.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 241.0,
+          "center_y": 502.0,
+          "radius": 162.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 763.0,
+          "center_y": 539.0,
+          "radius": 189.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 409.0,
+          "center_y": 470.0,
+          "radius": 167.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 265.0,
+          "center_y": 461.0,
+          "radius": 197.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 373.0,
+          "center_y": 430.0,
+          "radius": 206.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 255.0,
+          "center_y": 541.0,
+          "radius": 194.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 373.0,
+          "center_y": 410.0,
+          "radius": 226.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 236.0,
+          "center_y": 415.0,
+          "radius": 220.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 685.0,
+          "center_y": 479.0,
+          "radius": 30.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 748.0,
+          "center_y": 470.0,
+          "radius": 52.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 603.0,
+          "center_y": 478.0,
+          "radius": 29.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 273.0,
+          "center_y": 412.0,
+          "radius": 241.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 278.0,
+          "center_y": 501.0,
+          "radius": 199.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 213.0,
+          "center_y": 451.0,
+          "radius": 183.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 343.0,
+          "center_y": 931.0,
+          "radius": 311.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 355.0,
+          "center_y": 472.0,
+          "radius": 161.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 433.0,
+          "center_y": 485.0,
+          "radius": 151.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 585.0,
+          "center_y": 175.0,
+          "radius": 194.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 613.0,
+          "center_y": 531.0,
+          "radius": 99.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 649.0,
+          "center_y": 465.0,
+          "radius": 68.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 301.0,
+          "center_y": 676.0,
+          "radius": 61.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 421.0,
+          "center_y": 436.0,
+          "radius": 201.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 400.0,
+          "center_y": 494.0,
+          "radius": 142.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 769.0,
+          "center_y": 463.0,
+          "radius": 31.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 352.0,
+          "center_y": 428.0,
+          "radius": 209.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 682.0,
+          "center_y": 247.0,
+          "radius": 208.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 379.0,
+          "center_y": 455.0,
+          "radius": 175.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 317.0,
+          "center_y": 761.0,
+          "radius": 141.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 314.0,
+          "center_y": 497.0,
+          "radius": 136.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 451.0,
+          "center_y": 457.0,
+          "radius": 181.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 475.0,
+          "center_y": 472.0,
+          "radius": 165.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 343.0,
+          "center_y": 454.0,
+          "radius": 181.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 451.0,
+          "center_y": 505.0,
+          "radius": 133.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 577.0,
+          "center_y": 385.0,
+          "radius": 125.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 833.0,
+          "center_y": 466.0,
+          "radius": 96.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 682.0,
+          "center_y": 459.0,
+          "radius": 28.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 475.0,
+          "center_y": 496.0,
+          "radius": 141.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 833.0,
+          "center_y": 539.0,
+          "radius": 82.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 545.0,
+          "center_y": 193.0,
+          "radius": 175.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 349.0,
+          "center_y": 517.0,
+          "radius": 166.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 562.0,
+          "center_y": 323.0,
+          "radius": 187.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 394.0,
+          "center_y": 880.0,
+          "radius": 250.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 317.0,
+          "center_y": 797.0,
+          "radius": 176.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 189.0,
+          "center_y": 495.0,
+          "radius": 110.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 802.0,
+          "center_y": 467.0,
+          "radius": 65.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 705.0,
+          "center_y": 470.0,
+          "radius": 52.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 586.0,
+          "center_y": 550.0,
+          "radius": 79.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 496.0,
+          "center_y": 531.0,
+          "radius": 106.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 313.0,
+          "center_y": 833.0,
+          "radius": 210.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 293.0,
+          "center_y": 205.0,
+          "radius": 157.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 308.0,
+          "center_y": 713.0,
+          "radius": 98.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 608.0,
+          "center_y": 392.0,
+          "radius": 94.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 581.0,
+          "center_y": 428.0,
+          "radius": 83.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 839.0,
+          "center_y": 488.0,
+          "radius": 96.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 607.0,
+          "center_y": 211.0,
+          "radius": 158.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 428.0,
+          "center_y": 457.0,
+          "radius": 182.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 549.0,
+          "center_y": 443.0,
+          "radius": 78.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 693.0,
+          "center_y": 183.0,
+          "radius": 185.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 633.0,
+          "center_y": 587.0,
+          "radius": 121.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 423.0,
+          "center_y": 533.0,
+          "radius": 103.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 305.0,
+          "center_y": 653.0,
+          "radius": 44.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 580.0,
+          "center_y": 405.0,
+          "radius": 67.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 256.0,
+          "center_y": 235.0,
+          "radius": 129.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 632.0,
+          "center_y": 539.0,
+          "radius": 89.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 790.0,
+          "center_y": 441.0,
+          "radius": 71.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 316.0,
+          "center_y": 737.0,
+          "radius": 117.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 407.0,
+          "center_y": 259.0,
+          "radius": 103.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 191.0,
+          "center_y": 459.0,
+          "radius": 92.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 645.0,
+          "center_y": 313.0,
+          "radius": 147.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 464.0,
+          "center_y": 253.0,
+          "radius": 108.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 460.0,
+          "center_y": 539.0,
+          "radius": 98.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 314.0,
+          "center_y": 541.0,
+          "radius": 95.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 441.0,
+          "center_y": 554.0,
+          "radius": 83.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 557.0,
+          "center_y": 562.0,
+          "radius": 67.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 754.0,
+          "center_y": 434.0,
+          "radius": 65.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 727.0,
+          "center_y": 479.0,
+          "radius": 32.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 487.0,
+          "center_y": 731.0,
+          "radius": 102.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 700.0,
+          "center_y": 536.0,
+          "radius": 92.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 290.0,
+          "center_y": 555.0,
+          "radius": 80.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 560.0,
+          "center_y": 465.0,
+          "radius": 46.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 358.0,
+          "center_y": 559.0,
+          "radius": 77.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 398.0,
+          "center_y": 547.0,
+          "radius": 116.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 275.0,
+          "center_y": 525.0,
+          "radius": 109.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 817.0,
+          "center_y": 449.0,
+          "radius": 79.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 179.0,
+          "center_y": 442.0,
+          "radius": 71.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 857.0,
+          "center_y": 465.0,
+          "radius": 70.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 730.0,
+          "center_y": 233.0,
+          "radius": 137.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 394.0,
+          "center_y": 742.0,
+          "radius": 112.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 607.0,
+          "center_y": 334.0,
+          "radius": 98.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 319.0,
+          "center_y": 689.0,
+          "radius": 69.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 731.0,
+          "center_y": 434.0,
+          "radius": 66.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 562.0,
+          "center_y": 419.0,
+          "radius": 53.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 628.0,
+          "center_y": 439.0,
+          "radius": 52.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 601.0,
+          "center_y": 446.0,
+          "radius": 27.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 591.0,
+          "center_y": 307.0,
+          "radius": 126.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 553.0,
+          "center_y": 273.0,
+          "radius": 95.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 580.0,
+          "center_y": 569.0,
+          "radius": 60.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 290.0,
+          "center_y": 595.0,
+          "radius": 41.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 775.0,
+          "center_y": 487.0,
+          "radius": 22.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 555.0,
+          "center_y": 773.0,
+          "radius": 146.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 359.0,
+          "center_y": 755.0,
+          "radius": 125.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 368.0,
+          "center_y": 539.0,
+          "radius": 96.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 344.0,
+          "center_y": 268.0,
+          "radius": 93.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 670.0,
+          "center_y": 549.0,
+          "radius": 80.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 333.0,
+          "center_y": 557.0,
+          "radius": 74.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 557.0,
+          "center_y": 537.0,
+          "radius": 44.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 577.0,
+          "center_y": 824.0,
+          "radius": 196.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 409.0,
+          "center_y": 152.0,
+          "radius": 107.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 673.0,
+          "center_y": 145.0,
+          "radius": 106.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 676.0,
+          "center_y": 407.0,
+          "radius": 76.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 235.0,
+          "center_y": 559.0,
+          "radius": 74.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 736.0,
+          "center_y": 557.0,
+          "radius": 71.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 481.0,
+          "center_y": 571.0,
+          "radius": 67.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 315.0,
+          "center_y": 571.0,
+          "radius": 65.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 754.0,
+          "center_y": 567.0,
+          "radius": 61.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 421.0,
+          "center_y": 583.0,
+          "radius": 54.0,
+          "confidence": 1.0
+        },
+        {
+          "center_x": 621.0,
+          "center_y": 416.0,
+          "radius": 48.0,
+          "confidence": 1.0
+        }
+      ],
+      "contour_complexity": 0.0,
+      "has_repeating_pattern": false,
+      "pattern_description": "반복 패턴 없음"
+    },
+    "summary": {
+      "mean_gray": 170.934473,
+      "std_gray": 64.16144586285654,
+      "noise_level": "Low",
+      "edge_density": 0.002095,
+      "blob_count": 0,
+      "has_circular_structure": true,
+      "ai_summary": "AI 분석을 사용할 수 없습니다."
+    },
+    "ai_prompt": "You are an expert vision algorithm engineer.\nAnalyze the following image features and provide a concise technical summary in Korean (2-3 sentences).\nFocus on: image quality, dominant features, and recommended inspection approach.\n\nImage Properties:\n- Size: 1000 x 1000 px\n- Mean Gray: 170.9, Std: 64.2\n- Dynamic Range: 224\n- Distribution: bimodal\n\nNoise Analysis:\n- Level: Low\n- Laplacian Variance: 12.63\n- Recommended Filter: gaussian_blur\n\nEdge Analysis:\n- Mean Strength: 11.63\n- Edge Density: 0.0021\n- Dominant Direction: diagonal\n- Suitable for Caliper: False\n\nShape Analysis:\n- Blob Count: 0\n- Has Circular Structure: True\n- Repeating Pattern: False\n- Suggested Methods: N/A\n\nProvide analysis summary in Korean:",
+    "ai_summary": "AI 분석을 사용할 수 없습니다.",
+    "preprocessing_recommendations": [
+      "에지 약함 - 언샵 마스크 또는 에지 강화 권장",
+      "blob 미검출 - 임계값 조정 또는 전처리 필요"
+    ],
+    "analyzed_at": "2026-04-18T06:59:25.725030Z"
+  },
+  "align": {
+    "success": false,
+    "strategy_name": "no_align_image",
+    "score": 0.0,
+    "transform_matrix": null,
+    "failure_reason": "ALIGN_OK 이미지가 없어 Align을 실행할 수 없습니다"
+  },
+  "inspection": {
+    "best_candidate": {
+      "engine_class": "<class 'core.inspection.circular_caliper_inspector.CircularCaliperInspectionEngine'>",
+      "engine_name": "Circular Caliper",
+      "priority": 1.0,
+      "rationale": "136 circular structure(s) detected by Hough transform.",
+      "source": "rule_based"
+    },
+    "best_evaluation": {
+      "best_strategy": "Circular Caliper",
+      "ok_pass_rate": 0.34782608695652173,
+      "ng_detect_rate": 1.0,
+      "final_score": 67.3913043478261,
+      "margin": 34.78260869565217,
+      "is_margin_warning": false,
+      "fp_images": [
+        "ok_0",
+        "ok_1",
+        "ok_3",
+        "ok_5",
+        "ok_6",
+        "ok_7",
+        "ok_9",
+        "ok_11",
+        "ok_13",
+        "ok_14",
+        "ok_15",
+        "ok_16",
+        "ok_17",
+        "ok_18",
+        "ok_22"
+      ],
+      "fn_images": []
+    },
+    "all_results": [
+      [
+        {
+          "engine_class": "<class 'core.inspection.circular_caliper_inspector.CircularCaliperInspectionEngine'>",
+          "engine_name": "Circular Caliper",
+          "priority": 1.0,
+          "rationale": "136 circular structure(s) detected by Hough transform.",
+          "source": "rule_based"
+        },
+        {
+          "best_strategy": "Circular Caliper",
+          "ok_pass_rate": 0.34782608695652173,
+          "ng_detect_rate": 1.0,
+          "final_score": 67.3913043478261,
+          "margin": 34.78260869565217,
+          "is_margin_warning": false,
+          "fp_images": [
+            "ok_0",
+            "ok_1",
+            "ok_3",
+            "ok_5",
+            "ok_6",
+            "ok_7",
+            "ok_9",
+            "ok_11",
+            "ok_13",
+            "ok_14",
+            "ok_15",
+            "ok_16",
+            "ok_17",
+            "ok_18",
+            "ok_22"
+          ],
+          "fn_images": []
+        }
+      ],
+      [
+        {
+          "engine_class": "<class 'core.inspection.pattern_inspector.PatternInspectionEngine'>",
+          "engine_name": "Pattern Inspection",
+          "priority": 0.8013,
+          "rationale": "Low noise (level=Low) and sufficient contrast (std_gray=64.2).",
+          "source": "rule_based"
+        },
+        {
+          "best_strategy": "Pattern Inspection",
+          "ok_pass_rate": 0.0,
+          "ng_detect_rate": 0.0,
+          "final_score": 0.0,
+          "margin": -100.0,
+          "is_margin_warning": true,
+          "fp_images": [
+            "ok_0",
+            "ok_1",
+            "ok_2",
+            "ok_3",
+            "ok_4",
+            "ok_5",
+            "ok_6",
+            "ok_7",
+            "ok_8",
+            "ok_9",
+            "ok_10",
+            "ok_11",
+            "ok_12",
+            "ok_13",
+            "ok_14",
+            "ok_15",
+            "ok_16",
+            "ok_17",
+            "ok_18",
+            "ok_19",
+            "ok_20",
+            "ok_21",
+            "ok_22"
+          ],
+          "fn_images": [
+            "ng_0",
+            "ng_1",
+            "ng_2",
+            "ng_3",
+            "ng_4",
+            "ng_5",
+            "ng_6",
+            "ng_7",
+            "ng_8",
+            "ng_9",
+            "ng_10",
+            "ng_11",
+            "ng_12",
+            "ng_13",
+            "ng_14",
+            "ng_15",
+            "ng_16",
+            "ng_17",
+            "ng_18",
+            "ng_19",
+            "ng_20"
+          ]
+        }
+      ]
+    ],
+    "optimization_log": [
+      "[OK] Circular Caliper: score=67.39, ok_pass_rate=0.3478, ng_detect_rate=1.0000",
+      "[OK] Pattern Inspection: score=0.00, ok_pass_rate=0.0000, ng_detect_rate=0.0000"
+    ]
+  },
+  "evaluation": {
+    "failure_result": {
+      "fp_overlay_paths": [
+        "/var/folders/7g/zpbrxq_52cn77pygfkmk55sw0000gn/T/argos_failure_xg9a6onz/FP_ok_0.png",
+        "/var/folders/7g/zpbrxq_52cn77pygfkmk55sw0000gn/T/argos_failure_xg9a6onz/FP_ok_1.png",
+        "/var/folders/7g/zpbrxq_52cn77pygfkmk55sw0000gn/T/argos_failure_xg9a6onz/FP_ok_3.png",
+        "/var/folders/7g/zpbrxq_52cn77pygfkmk55sw0000gn/T/argos_failure_xg9a6onz/FP_ok_5.png",
+        "/var/folders/7g/zpbrxq_52cn77pygfkmk55sw0000gn/T/argos_failure_xg9a6onz/FP_ok_6.png",
+        "/var/folders/7g/zpbrxq_52cn77pygfkmk55sw0000gn/T/argos_failure_xg9a6onz/FP_ok_7.png",
+        "/var/folders/7g/zpbrxq_52cn77pygfkmk55sw0000gn/T/argos_failure_xg9a6onz/FP_ok_9.png",
+        "/var/folders/7g/zpbrxq_52cn77pygfkmk55sw0000gn/T/argos_failure_xg9a6onz/FP_ok_11.png",
+        "/var/folders/7g/zpbrxq_52cn77pygfkmk55sw0000gn/T/argos_failure_xg9a6onz/FP_ok_13.png",
+        "/var/folders/7g/zpbrxq_52cn77pygfkmk55sw0000gn/T/argos_failure_xg9a6onz/FP_ok_14.png",
+        "/var/folders/7g/zpbrxq_52cn77pygfkmk55sw0000gn/T/argos_failure_xg9a6onz/FP_ok_15.png",
+        "/var/folders/7g/zpbrxq_52cn77pygfkmk55sw0000gn/T/argos_failure_xg9a6onz/FP_ok_16.png",
+        "/var/folders/7g/zpbrxq_52cn77pygfkmk55sw0000gn/T/argos_failure_xg9a6onz/FP_ok_17.png",
+        "/var/folders/7g/zpbrxq_52cn77pygfkmk55sw0000gn/T/argos_failure_xg9a6onz/FP_ok_18.png",
+        "/var/folders/7g/zpbrxq_52cn77pygfkmk55sw0000gn/T/argos_failure_xg9a6onz/FP_ok_22.png"
+      ],
+      "fn_overlay_paths": [],
+      "cause_summary": "AI 분석 불가",
+      "improvement_directions": [],
+      "fp_count": 15,
+      "fn_count": 0
+    },
+    "feasibility_result": {
+      "rule_based_sufficient": false,
+      "recommended_approach": "Edge Learning",
+      "reasoning": "Rule-based 최고 점수(67.4)가 임계값(70.0)에 미달합니다 (갭: 2.6). FP 15건, FN 0건이 발생했습니다. 휴리스틱 분석 결과 Edge Learning을(를) 권장합니다.",
+      "model_suggestion": "Anomaly detection (PatchCore)"
+    }
+  },
+  "inspection_purpose": {
+    "inspection_type": "결함검출",
+    "description": "캡슐에 찍힘이 없는지 검사. 찍힘이 있을 경우 NG. blob 방식으로 먼저 검토됐으면 좋겠",
+    "ok_ng_criteria": "",
+    "target_feature": "외관 검사",
+    "measurement_unit": "mm",
+    "tolerance": "",
+    "created_at": "2026-04-18T15:59:21.732371"
+  }
+}
