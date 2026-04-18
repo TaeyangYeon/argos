@@ -10,9 +10,12 @@ from pathlib import Path
 from typing import Any, Optional
 
 from reportlab.lib import colors
+from reportlab.lib.fonts import addMapping
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
 from reportlab.lib.units import mm
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.platypus import (
     Paragraph,
     SimpleDocTemplate,
@@ -32,6 +35,20 @@ from core.models import (
     OptimizationResult,
 )
 
+# Project font directory
+_ASSETS_FONTS_DIR = Path(__file__).parent.parent.parent / "assets" / "fonts"
+
+# System font search paths (Korean-capable fonts)
+_SYSTEM_FONT_PATHS = [
+    # macOS
+    Path("/System/Library/Fonts/AppleSDGothicNeo.ttc"),
+    # Windows
+    Path("C:/Windows/Fonts/malgun.ttf"),
+    # Linux
+    Path("/usr/share/fonts/truetype/noto/NotoSansCJK-Regular.ttc"),
+    Path("/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc"),
+]
+
 
 def _safe_str(value: Any) -> str:
     """Convert value to string, handling None and special types."""
@@ -45,8 +62,81 @@ def _safe_str(value: Any) -> str:
 class ArgosPDFExporter:
     """Generates a formatted PDF report from analysis results."""
 
+    # Cached font names after registration
+    _font_regular: str = "Helvetica"
+    _font_bold: str = "Helvetica-Bold"
+    _font_registered: bool = False
+
     def __init__(self) -> None:
         self._logger = get_logger("pdf_exporter")
+
+    @classmethod
+    def _register_korean_font(cls) -> tuple[str, str]:
+        """
+        Register a Korean-capable font with reportlab.
+
+        Search order:
+        1. assets/fonts/NotoSansKR-Regular.ttf (bundled)
+        2. System Korean fonts (macOS / Windows / Linux)
+        3. Fallback to Helvetica (Korean will render as boxes)
+
+        Returns:
+            Tuple of (regular_font_name, bold_font_name).
+        """
+        if cls._font_registered:
+            return cls._font_regular, cls._font_bold
+
+        logger = get_logger("pdf_exporter")
+
+        # 1. Try bundled NotoSansKR
+        bundled = _ASSETS_FONTS_DIR / "NotoSansKR-Regular.ttf"
+        if bundled.is_file():
+            try:
+                pdfmetrics.registerFont(TTFont("NotoSansKR", str(bundled)))
+                pdfmetrics.registerFont(TTFont("NotoSansKR-Bold", str(bundled)))
+                addMapping("NotoSansKR", 0, 0, "NotoSansKR")
+                addMapping("NotoSansKR", 1, 0, "NotoSansKR-Bold")
+                cls._font_regular = "NotoSansKR"
+                cls._font_bold = "NotoSansKR-Bold"
+                cls._font_registered = True
+                logger.info("Registered bundled Korean font: %s", bundled)
+                return cls._font_regular, cls._font_bold
+            except Exception as exc:
+                logger.warning("Failed to register bundled font: %s", exc)
+
+        # 2. Try system fonts
+        for sys_path in _SYSTEM_FONT_PATHS:
+            if not sys_path.is_file():
+                continue
+            try:
+                suffix = sys_path.suffix.lower()
+                if suffix == ".ttc":
+                    pdfmetrics.registerFont(
+                        TTFont("KoreanFont", str(sys_path), subfontIndex=0)
+                    )
+                else:
+                    pdfmetrics.registerFont(TTFont("KoreanFont", str(sys_path)))
+                pdfmetrics.registerFont(
+                    TTFont("KoreanFont-Bold", str(sys_path), subfontIndex=0)
+                    if suffix == ".ttc"
+                    else TTFont("KoreanFont-Bold", str(sys_path))
+                )
+                addMapping("KoreanFont", 0, 0, "KoreanFont")
+                addMapping("KoreanFont", 1, 0, "KoreanFont-Bold")
+                cls._font_regular = "KoreanFont"
+                cls._font_bold = "KoreanFont-Bold"
+                cls._font_registered = True
+                logger.info("Registered system Korean font: %s", sys_path)
+                return cls._font_regular, cls._font_bold
+            except Exception as exc:
+                logger.warning("Failed to register system font %s: %s", sys_path, exc)
+
+        # 3. Fallback
+        logger.warning(
+            "No Korean font found. PDF will use Helvetica — Korean text may render as boxes."
+        )
+        cls._font_registered = True
+        return cls._font_regular, cls._font_bold
 
     def export(self, results: dict, output_path: Path) -> Path:
         """
@@ -59,6 +149,8 @@ class ArgosPDFExporter:
         Returns:
             Path to the created PDF file.
         """
+        font_regular, font_bold = self._register_korean_font()
+
         output_path = Path(output_path)
         output_path.mkdir(parents=True, exist_ok=True)
         file_path = output_path / "argos_report.pdf"
@@ -73,24 +165,29 @@ class ArgosPDFExporter:
         )
 
         styles = getSampleStyleSheet()
-        elements = self._build_elements(results, styles)
+        elements = self._build_elements(results, styles, font_regular, font_bold)
         doc.build(elements, onFirstPage=self._add_page_number, onLaterPages=self._add_page_number)
 
         self._logger.info("PDF export complete: %s", file_path)
         return file_path
 
-    def _build_elements(self, results: dict, styles) -> list:
+    def _build_elements(
+        self, results: dict, styles, font_regular: str, font_bold: str
+    ) -> list:
         """Build the list of flowable elements for the PDF."""
         elements: list = []
 
         title_style = ParagraphStyle(
-            "ArgosTitle", parent=styles["Title"], fontSize=18, spaceAfter=12
+            "ArgosTitle", parent=styles["Title"],
+            fontName=font_bold, fontSize=18, spaceAfter=12,
         )
         heading_style = ParagraphStyle(
-            "ArgosHeading", parent=styles["Heading2"], fontSize=14, spaceBefore=12, spaceAfter=6
+            "ArgosHeading", parent=styles["Heading2"],
+            fontName=font_bold, fontSize=14, spaceBefore=12, spaceAfter=6,
         )
         body_style = ParagraphStyle(
-            "ArgosBody", parent=styles["Normal"], fontSize=10, spaceAfter=4
+            "ArgosBody", parent=styles["Normal"],
+            fontName=font_regular, fontSize=10, spaceAfter=4,
         )
 
         # Header
@@ -236,14 +333,14 @@ class ArgosPDFExporter:
                 return best_eval
         return None
 
-    @staticmethod
-    def _make_table(data: list[list[str]]) -> Table:
+    def _make_table(self, data: list[list[str]]) -> Table:
         """Create a styled two-column table."""
         col_widths = [120, 350]
         table = Table(data, colWidths=col_widths)
         table.setStyle(TableStyle([
             ("BACKGROUND", (0, 0), (0, -1), colors.HexColor("#E8EAF6")),
             ("TEXTCOLOR", (0, 0), (-1, -1), colors.black),
+            ("FONTNAME", (0, 0), (-1, -1), self._font_regular),
             ("FONTSIZE", (0, 0), (-1, -1), 9),
             ("VALIGN", (0, 0), (-1, -1), "TOP"),
             ("GRID", (0, 0), (-1, -1), 0.5, colors.HexColor("#BDBDBD")),
@@ -254,11 +351,11 @@ class ArgosPDFExporter:
         ]))
         return table
 
-    @staticmethod
-    def _add_page_number(canvas, doc) -> None:
+    @classmethod
+    def _add_page_number(cls, canvas, doc) -> None:
         """Add page number at the bottom of each page."""
         canvas.saveState()
-        canvas.setFont("Helvetica", 8)
+        canvas.setFont(cls._font_regular, 8)
         page_num = canvas.getPageNumber()
         text = f"Page {page_num}"
         canvas.drawCentredString(A4[0] / 2, 10 * mm, text)

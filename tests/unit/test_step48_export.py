@@ -229,6 +229,31 @@ class TestArgosPDFExporter:
         path = ArgosPDFExporter().export(results, tmp_path)
         assert path.stat().st_size > 0
 
+    def test_korean_font_registered(self):
+        """Font registration should not crash and return valid names."""
+        regular, bold = ArgosPDFExporter._register_korean_font()
+        assert isinstance(regular, str)
+        assert isinstance(bold, str)
+        assert len(regular) > 0
+        assert len(bold) > 0
+
+    def test_pdf_export_with_korean_content(self, tmp_path: Path):
+        """PDF with Korean strings should be created and non-empty."""
+        results = {
+            "purpose": InspectionPurpose(
+                inspection_type="결함검출",
+                description="표면 스크래치 검출",
+                ok_ng_criteria="스크래치 없음=OK",
+                target_feature="표면 결함",
+                tolerance="±0.1mm",
+            ),
+        }
+        path = ArgosPDFExporter().export(results, tmp_path)
+        assert path.exists()
+        assert path.stat().st_size > 0
+        header = path.read_bytes()[:5]
+        assert header == b"%PDF-"
+
 
 # ── Image Exporter Tests ─────────────────────────────────────────────────────
 

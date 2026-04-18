@@ -13,7 +13,7 @@
       "distribution_type": "bimodal",
       "ok_mean": null,
       "ng_mean": null,
-      "separation_score": 0.56
+      "separation_score": null
     },
     "noise": {
       "laplacian_variance": 12.626336989391003,
@@ -879,195 +879,41 @@
       "에지 약함 - 언샵 마스크 또는 에지 강화 권장",
       "blob 미검출 - 임계값 조정 또는 전처리 필요"
     ],
-    "analyzed_at": "2026-04-18T06:59:25.725030Z"
+    "analyzed_at": "2026-04-18T13:36:57.181662Z"
   },
   "align": {
-    "success": false,
-    "strategy_name": "no_align_image",
-    "score": 0.0,
-    "transform_matrix": null,
-    "failure_reason": "ALIGN_OK 이미지가 없어 Align을 실행할 수 없습니다"
-  },
-  "inspection": {
-    "best_candidate": {
-      "engine_class": "<class 'core.inspection.circular_caliper_inspector.CircularCaliperInspectionEngine'>",
-      "engine_name": "Circular Caliper",
-      "priority": 1.0,
-      "rationale": "136 circular structure(s) detected by Hough transform.",
-      "source": "rule_based"
-    },
-    "best_evaluation": {
-      "best_strategy": "Circular Caliper",
-      "ok_pass_rate": 0.34782608695652173,
-      "ng_detect_rate": 1.0,
-      "final_score": 67.3913043478261,
-      "margin": 34.78260869565217,
-      "is_margin_warning": false,
-      "fp_images": [
-        "ok_0",
-        "ok_1",
-        "ok_3",
-        "ok_5",
-        "ok_6",
-        "ok_7",
-        "ok_9",
-        "ok_11",
-        "ok_13",
-        "ok_14",
-        "ok_15",
-        "ok_16",
-        "ok_17",
-        "ok_18",
-        "ok_22"
+    "success": true,
+    "strategy_name": "Pattern Matching",
+    "score": 1.0,
+    "transform_matrix": {
+      "__ndarray__": true,
+      "shape": [
+        2,
+        3
       ],
-      "fn_images": []
+      "dtype": "float64"
     },
-    "all_results": [
-      [
-        {
-          "engine_class": "<class 'core.inspection.circular_caliper_inspector.CircularCaliperInspectionEngine'>",
-          "engine_name": "Circular Caliper",
-          "priority": 1.0,
-          "rationale": "136 circular structure(s) detected by Hough transform.",
-          "source": "rule_based"
-        },
-        {
-          "best_strategy": "Circular Caliper",
-          "ok_pass_rate": 0.34782608695652173,
-          "ng_detect_rate": 1.0,
-          "final_score": 67.3913043478261,
-          "margin": 34.78260869565217,
-          "is_margin_warning": false,
-          "fp_images": [
-            "ok_0",
-            "ok_1",
-            "ok_3",
-            "ok_5",
-            "ok_6",
-            "ok_7",
-            "ok_9",
-            "ok_11",
-            "ok_13",
-            "ok_14",
-            "ok_15",
-            "ok_16",
-            "ok_17",
-            "ok_18",
-            "ok_22"
-          ],
-          "fn_images": []
-        }
+    "failure_reason": null,
+    "design_doc": {
+      "chain_stages_tried": [
+        "pattern"
       ],
-      [
-        {
-          "engine_class": "<class 'core.inspection.pattern_inspector.PatternInspectionEngine'>",
-          "engine_name": "Pattern Inspection",
-          "priority": 0.8013,
-          "rationale": "Low noise (level=Low) and sufficient contrast (std_gray=64.2).",
-          "source": "rule_based"
-        },
-        {
-          "best_strategy": "Pattern Inspection",
-          "ok_pass_rate": 0.0,
-          "ng_detect_rate": 0.0,
-          "final_score": 0.0,
-          "margin": -100.0,
-          "is_margin_warning": true,
-          "fp_images": [
-            "ok_0",
-            "ok_1",
-            "ok_2",
-            "ok_3",
-            "ok_4",
-            "ok_5",
-            "ok_6",
-            "ok_7",
-            "ok_8",
-            "ok_9",
-            "ok_10",
-            "ok_11",
-            "ok_12",
-            "ok_13",
-            "ok_14",
-            "ok_15",
-            "ok_16",
-            "ok_17",
-            "ok_18",
-            "ok_19",
-            "ok_20",
-            "ok_21",
-            "ok_22"
-          ],
-          "fn_images": [
-            "ng_0",
-            "ng_1",
-            "ng_2",
-            "ng_3",
-            "ng_4",
-            "ng_5",
-            "ng_6",
-            "ng_7",
-            "ng_8",
-            "ng_9",
-            "ng_10",
-            "ng_11",
-            "ng_12",
-            "ng_13",
-            "ng_14",
-            "ng_15",
-            "ng_16",
-            "ng_17",
-            "ng_18",
-            "ng_19",
-            "ng_20"
-          ]
-        }
-      ]
-    ],
-    "optimization_log": [
-      "[OK] Circular Caliper: score=67.39, ok_pass_rate=0.3478, ng_detect_rate=1.0000",
-      "[OK] Pattern Inspection: score=0.00, ok_pass_rate=0.0000, ng_detect_rate=0.0000"
-    ]
-  },
-  "evaluation": {
-    "failure_result": {
-      "fp_overlay_paths": [
-        "/var/folders/7g/zpbrxq_52cn77pygfkmk55sw0000gn/T/argos_failure_xg9a6onz/FP_ok_0.png",
-        "/var/folders/7g/zpbrxq_52cn77pygfkmk55sw0000gn/T/argos_failure_xg9a6onz/FP_ok_1.png",
-        "/var/folders/7g/zpbrxq_52cn77pygfkmk55sw0000gn/T/argos_failure_xg9a6onz/FP_ok_3.png",
-        "/var/folders/7g/zpbrxq_52cn77pygfkmk55sw0000gn/T/argos_failure_xg9a6onz/FP_ok_5.png",
-        "/var/folders/7g/zpbrxq_52cn77pygfkmk55sw0000gn/T/argos_failure_xg9a6onz/FP_ok_6.png",
-        "/var/folders/7g/zpbrxq_52cn77pygfkmk55sw0000gn/T/argos_failure_xg9a6onz/FP_ok_7.png",
-        "/var/folders/7g/zpbrxq_52cn77pygfkmk55sw0000gn/T/argos_failure_xg9a6onz/FP_ok_9.png",
-        "/var/folders/7g/zpbrxq_52cn77pygfkmk55sw0000gn/T/argos_failure_xg9a6onz/FP_ok_11.png",
-        "/var/folders/7g/zpbrxq_52cn77pygfkmk55sw0000gn/T/argos_failure_xg9a6onz/FP_ok_13.png",
-        "/var/folders/7g/zpbrxq_52cn77pygfkmk55sw0000gn/T/argos_failure_xg9a6onz/FP_ok_14.png",
-        "/var/folders/7g/zpbrxq_52cn77pygfkmk55sw0000gn/T/argos_failure_xg9a6onz/FP_ok_15.png",
-        "/var/folders/7g/zpbrxq_52cn77pygfkmk55sw0000gn/T/argos_failure_xg9a6onz/FP_ok_16.png",
-        "/var/folders/7g/zpbrxq_52cn77pygfkmk55sw0000gn/T/argos_failure_xg9a6onz/FP_ok_17.png",
-        "/var/folders/7g/zpbrxq_52cn77pygfkmk55sw0000gn/T/argos_failure_xg9a6onz/FP_ok_18.png",
-        "/var/folders/7g/zpbrxq_52cn77pygfkmk55sw0000gn/T/argos_failure_xg9a6onz/FP_ok_22.png"
-      ],
-      "fn_overlay_paths": [],
-      "cause_summary": "AI 분석 불가",
-      "improvement_directions": [],
-      "fp_count": 15,
-      "fn_count": 0
+      "winning_strategy": "pattern",
+      "failure_reasons": {},
+      "ai_strategy_decision": false
     },
-    "feasibility_result": {
-      "rule_based_sufficient": false,
-      "recommended_approach": "Edge Learning",
-      "reasoning": "Rule-based 최고 점수(67.4)가 임계값(70.0)에 미달합니다 (갭: 2.6). FP 15건, FN 0건이 발생했습니다. 휴리스틱 분석 결과 Edge Learning을(를) 권장합니다.",
-      "model_suggestion": "Anomaly detection (PatchCore)"
-    }
+    "overlay_image": null,
+    "reference_point": null
   },
+  "inspection": null,
+  "evaluation": null,
   "inspection_purpose": {
-    "inspection_type": "결함검출",
-    "description": "캡슐에 찍힘이 없는지 검사. 찍힘이 있을 경우 NG. blob 방식으로 먼저 검토됐으면 좋겠",
+    "inspection_type": "위치정렬",
+    "description": "캡슐의 정중앙 좌표로 이재기가 캡슐을 집을 수 있도록 align 보정값 계",
     "ok_ng_criteria": "",
-    "target_feature": "외관 검사",
+    "target_feature": "캡슐",
     "measurement_unit": "mm",
     "tolerance": "",
-    "created_at": "2026-04-18T15:59:21.732371"
+    "created_at": "2026-04-18T22:36:53.787253"
   }
 }
