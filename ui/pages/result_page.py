@@ -647,14 +647,15 @@ class ResultPage(BasePage):
         """
         self._inspection_tab.load_data(result)
 
-    def load_feasibility_result(self, result) -> None:
+    def load_feasibility_result(self, result, context=None) -> None:
         """
-        Fill the Feasibility tab skeleton.
+        Fill the Feasibility tab.
 
         Args:
             result: FeasibilityResult or None.
+            context: Optional dict with best_score, threshold, feature_summary.
         """
-        self._feasibility_tab.load_data(result)
+        self._feasibility_tab.load_data(result, context)
 
     def load_failure_result(self, result) -> None:
         """
@@ -696,7 +697,23 @@ class ResultPage(BasePage):
             if isinstance(eval_dict, dict)
             else None
         )
-        self.load_feasibility_result(feas)
+
+        # Build context for feasibility tab
+        feas_context = {}
+        inspection_result = aggregate.get("inspection")
+        if inspection_result is not None:
+            best_eval = getattr(inspection_result, "best_evaluation", None)
+            if best_eval is not None:
+                feas_context["best_score"] = getattr(
+                    best_eval, "final_score", 0.0
+                )
+        try:
+            from config.settings import Settings
+            feas_context["threshold"] = Settings().score_threshold
+        except Exception:
+            pass
+
+        self.load_feasibility_result(feas, feas_context or None)
 
         failure = (
             eval_dict.get("failure_result")

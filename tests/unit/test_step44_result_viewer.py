@@ -293,7 +293,7 @@ class TestFeasibilityTab:
         qtbot.addWidget(tab)
         tab.load_data(None)
 
-        text = tab._content_label.text()
+        text = tab._empty_label.text()
         assert "Feasibility 결과 없음" in text
 
     def test_feasibility_tab_skeleton_renders_level_badge(self, qtbot, feasibility_result):
@@ -303,7 +303,7 @@ class TestFeasibilityTab:
         tab.load_data(feasibility_result)
 
         assert "Rule-based" in tab._level_badge.text()
-        assert tab._rationale_label.text() != ""
+        assert tab._rationale_text.text() != ""
 
 
 class TestLoadAll:
@@ -328,4 +328,4 @@ class TestLoadAll:
         # Inspection tab shows empty state
         assert "Inspection 결과 없음" in result_page._inspection_tab._content_label.text()
         # Feasibility tab shows empty state
-        assert "Feasibility 결과 없음" in result_page._feasibility_tab._content_label.text()
+        assert "Feasibility 결과 없음" in result_page._feasibility_tab._empty_label.text()
