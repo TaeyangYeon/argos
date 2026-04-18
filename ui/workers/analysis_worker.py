@@ -434,7 +434,17 @@ class AnalysisWorker(QThread):
             failure_analyzer = FailureAnalyzer(
                 ai_provider=self._ai_provider,
             )
-            failure_result = failure_analyzer.analyze(opt_result, purpose)
+
+            # Load OK/NG images for overlay rendering on original images
+            ok_images_meta = self.image_store.get_all(ImageType.INSPECTION_OK)
+            ng_images_meta = self.image_store.get_all(ImageType.INSPECTION_NG)
+            ok_arrays = [self.image_store.load_image(m.id) for m in ok_images_meta] if ok_images_meta else []
+            ng_arrays = [self.image_store.load_image(m.id) for m in ng_images_meta] if ng_images_meta else []
+
+            failure_result = failure_analyzer.analyze(
+                opt_result, purpose,
+                ok_images=ok_arrays, ng_images=ng_arrays,
+            )
             self.log_message.emit(
                 "INFO",
                 f"실패 분석 완료 — FP: {failure_result.fp_count}건, "

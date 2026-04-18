@@ -151,6 +151,9 @@ class IFailureAnalyzer(ABC):
         self,
         optimization_result: "OptimizationResult",
         purpose: "Optional[InspectionPurpose]" = None,
+        *,
+        ok_images: "Optional[list]" = None,
+        ng_images: "Optional[list]" = None,
     ) -> "FailureAnalysisResult":
         """
         Analyse the failure cases from an OptimizationResult.
@@ -160,6 +163,10 @@ class IFailureAnalyzer(ABC):
                                   best candidate and its EvaluationResult.
             purpose:             Optional InspectionPurpose used to enrich the
                                  AI prompt with domain context.
+            ok_images:           Optional list of OK image arrays (np.ndarray).
+                                 Used as overlay background for FP cases.
+            ng_images:           Optional list of NG image arrays (np.ndarray).
+                                 Used as overlay background for FN cases.
 
         Returns:
             FailureAnalysisResult with overlay paths, counts, and AI analysis.

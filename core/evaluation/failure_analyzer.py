@@ -37,15 +37,22 @@ _FONT_THICKNESS = 2
 
 _AI_FALLBACK_SUMMARY = "AI 분석 불가"
 
+# BGR colours for failure type borders
+_FP_COLOR_BGR = (0, 0, 255)    # Red
+_FN_COLOR_BGR = (0, 165, 255)  # Orange
+
+_ID_RE = re.compile(r"^(ok|ng)_(\d+)$")
+
 
 class FailureAnalyzer(IFailureAnalyzer):
     """
     Analyses failure cases from an OptimizationResult.
 
     For each false-positive (FP) and false-negative (FN) image identifier,
-    a placeholder overlay image is created with a red border and a "FP" / "FN"
-    label rendered via OpenCV.  An optional AI provider is queried for a
-    text-only root-cause analysis.
+    an overlay image is created — using the original image as background
+    when available, with a coloured border and failure-type label rendered
+    via OpenCV.  An optional AI provider is queried for a text-only
+    root-cause analysis.
     """
 
     def __init__(
@@ -64,6 +71,8 @@ class FailureAnalyzer(IFailureAnalyzer):
         self._ai_provider = ai_provider
         self._output_dir: str = output_dir or tempfile.mkdtemp(prefix="argos_failure_")
         os.makedirs(self._output_dir, exist_ok=True)
+        self._ok_images: Optional[list[np.ndarray]] = None
+        self._ng_images: Optional[list[np.ndarray]] = None
 
     # ------------------------------------------------------------------ #
     #  IFailureAnalyzer public API                                         #
@@ -73,6 +82,9 @@ class FailureAnalyzer(IFailureAnalyzer):
         self,
         optimization_result: object,
         purpose: object = None,
+        *,
+        ok_images: Optional[list] = None,
+        ng_images: Optional[list] = None,
     ) -> FailureAnalysisResult:
         """
         Run failure analysis on the best candidate from an OptimizationResult.
@@ -80,21 +92,28 @@ class FailureAnalyzer(IFailureAnalyzer):
         Args:
             optimization_result: OptimizationResult from InspectionOptimizer.
             purpose:             Optional InspectionPurpose for AI context.
+            ok_images:           Optional list of OK image arrays (np.ndarray).
+                                 Used as overlay background for FP cases.
+            ng_images:           Optional list of NG image arrays (np.ndarray).
+                                 Used as overlay background for FN cases.
 
         Returns:
             FailureAnalysisResult with overlay paths, counts, and AI analysis.
         """
+        self._ok_images = ok_images
+        self._ng_images = ng_images
+
         best_candidate = getattr(optimization_result, "best_candidate", None)
         best_evaluation = getattr(optimization_result, "best_evaluation", None)
 
-        fp_images: list[str] = list(getattr(best_evaluation, "fp_images", []) or [])
-        fn_images: list[str] = list(getattr(best_evaluation, "fn_images", []) or [])
+        fp_image_ids: list[str] = list(getattr(best_evaluation, "fp_images", []) or [])
+        fn_image_ids: list[str] = list(getattr(best_evaluation, "fn_images", []) or [])
 
-        fp_overlay_paths = self._generate_overlays(fp_images, "FP")
-        fn_overlay_paths = self._generate_overlays(fn_images, "FN")
+        fp_overlay_paths = self._generate_overlays(fp_image_ids, "FP")
+        fn_overlay_paths = self._generate_overlays(fn_image_ids, "FN")
 
         cause_summary, improvement_directions = self._call_ai(
-            best_candidate, best_evaluation, purpose, len(fp_images), len(fn_images)
+            best_candidate, best_evaluation, purpose, len(fp_image_ids), len(fn_image_ids)
         )
 
         return FailureAnalysisResult(
@@ -102,8 +121,8 @@ class FailureAnalyzer(IFailureAnalyzer):
             fn_overlay_paths=fn_overlay_paths,
             cause_summary=cause_summary,
             improvement_directions=improvement_directions,
-            fp_count=len(fp_images),
-            fn_count=len(fn_images),
+            fp_count=len(fp_image_ids),
+            fn_count=len(fn_image_ids),
         )
 
     # ------------------------------------------------------------------ #
@@ -129,31 +148,50 @@ class FailureAnalyzer(IFailureAnalyzer):
                 logger.warning("오버레이 생성 실패 (%s / %s): %s", label, image_id, exc)
         return saved_paths
 
+    def _resolve_source_image(self, image_id: str) -> Optional[np.ndarray]:
+        """Look up the original image array from the image_id (e.g. 'ok_0', 'ng_2')."""
+        m = _ID_RE.match(image_id)
+        if m is None:
+            return None
+        prefix, idx_str = m.group(1), int(m.group(2))
+        if prefix == "ok" and self._ok_images and idx_str < len(self._ok_images):
+            return self._ok_images[idx_str]
+        if prefix == "ng" and self._ng_images and idx_str < len(self._ng_images):
+            return self._ng_images[idx_str]
+        return None
+
     def _make_overlay(self, image_id: str, label: str) -> str:
         """
         Create a single overlay image and save it to disk.
 
+        Uses the original image as background when available; otherwise
+        falls back to a gray placeholder canvas.
+
         Returns:
             Absolute path to the saved PNG file.
         """
-        img = np.ones((_OVERLAY_H, _OVERLAY_W, 3), dtype=np.uint8) * 180
+        source = self._resolve_source_image(image_id)
 
-        # Red border
-        cv2.rectangle(img, (0, 0), (_OVERLAY_W - 1, _OVERLAY_H - 1), _RED_BGR, _BORDER_THICKNESS)
+        if source is not None and isinstance(source, np.ndarray) and source.size > 0:
+            # Use the original image as background
+            img = source.copy()
+            if img.ndim == 2:
+                img = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
+        else:
+            # Fallback: gray placeholder
+            img = np.ones((_OVERLAY_H, _OVERLAY_W, 3), dtype=np.uint8) * 180
 
-        # Failure-type label at top-left
-        cv2.putText(img, label, (10, 35), _FONT, _FONT_SCALE, _RED_BGR, _FONT_THICKNESS)
+        h, w = img.shape[:2]
+        border_color = _FP_COLOR_BGR if label == "FP" else _FN_COLOR_BGR
 
-        # Image-ID annotation beneath the label
-        cv2.putText(
-            img,
-            image_id,
-            (10, 70),
-            cv2.FONT_HERSHEY_SIMPLEX,
-            0.5,
-            (50, 50, 50),
-            1,
-        )
+        # Coloured border
+        cv2.rectangle(img, (0, 0), (w - 1, h - 1), border_color, _BORDER_THICKNESS)
+
+        # Semi-transparent label background for readability
+        label_text = f"{label}: {image_id}"
+        (tw, th), baseline = cv2.getTextSize(label_text, _FONT, _FONT_SCALE, _FONT_THICKNESS)
+        cv2.rectangle(img, (0, 0), (tw + 20, th + baseline + 20), border_color, cv2.FILLED)
+        cv2.putText(img, label_text, (10, th + 10), _FONT, _FONT_SCALE, (255, 255, 255), _FONT_THICKNESS)
 
         safe_id = re.sub(r"[^\w\-]", "_", image_id)
         filename = f"{label}_{safe_id}.png"
