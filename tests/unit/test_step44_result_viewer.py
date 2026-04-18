@@ -200,11 +200,11 @@ def partial_aggregate(feature_result, align_result, inspection_purpose):
 
 
 class TestResultPageTabs:
-    """Tests for 5-tab structure and ordering."""
+    """Tests for 6-tab structure and ordering."""
 
     def test_result_page_has_five_tabs_in_order(self, result_page):
-        """ResultPage must have exactly 5 tabs."""
-        assert result_page._tab_widget.count() == 5
+        """ResultPage must have exactly 6 tabs."""
+        assert result_page._tab_widget.count() == 6
 
     def test_tab_labels_are_korean_as_specified(self, result_page):
         """Tab labels must be in Korean and match the spec order."""
@@ -216,6 +216,7 @@ class TestResultPageTabs:
             "Align 결과",
             "Inspection 결과",
             "Feasibility",
+            "Failure 분석",
         ]
 
 

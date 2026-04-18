@@ -40,10 +40,10 @@ class TestResultPage:
         """Test that tab widget is properly created with all tabs."""
         tab_widget = result_page._tab_widget
         assert tab_widget is not None
-        assert tab_widget.count() == 5
-        
+        assert tab_widget.count() == 6
+
         # Check tab titles
-        expected_tabs = ["요약", "Feature 분석", "Align 결과", "Inspection 결과", "Feasibility"]
+        expected_tabs = ["요약", "Feature 분석", "Align 결과", "Inspection 결과", "Feasibility", "Failure 분석"]
         actual_tabs = [tab_widget.tabText(i) for i in range(tab_widget.count())]
         assert actual_tabs == expected_tabs
         

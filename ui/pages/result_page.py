@@ -16,6 +16,7 @@ from .align_tab import AlignTab
 from .summary_tab import SummaryTab
 from .inspection_tab import InspectionTab
 from .feasibility_tab import FeasibilityTab
+from .failure_tab import FailureTab
 from ui.components.sidebar import PageID
 from core.analyzers.feature_analyzer import FullFeatureAnalysis
 
@@ -576,6 +577,10 @@ class ResultPage(BasePage):
         # 5. Feasibility tab (skeleton)
         self._feasibility_tab = FeasibilityTab()
         self._tab_widget.addTab(self._feasibility_tab, "Feasibility")
+
+        # 6. Failure 분석 tab
+        self._failure_tab = FailureTab()
+        self._tab_widget.addTab(self._failure_tab, "Failure 분석")
         
     def load_result(self, result: FullFeatureAnalysis) -> None:
         """
@@ -651,6 +656,15 @@ class ResultPage(BasePage):
         """
         self._feasibility_tab.load_data(result)
 
+    def load_failure_result(self, result) -> None:
+        """
+        Fill the Failure 분석 tab.
+
+        Args:
+            result: FailureAnalysisResult or None.
+        """
+        self._failure_tab.load_result(result)
+
     def load_all(self, aggregate) -> None:
         """
         Convenience dispatcher — fills every tab from the aggregate dict.
@@ -675,7 +689,7 @@ class ResultPage(BasePage):
         # Inspection
         self.load_inspection_result(aggregate.get("inspection"))
 
-        # Feasibility
+        # Feasibility & Failure
         eval_dict = aggregate.get("evaluation")
         feas = (
             eval_dict.get("feasibility_result")
@@ -683,6 +697,13 @@ class ResultPage(BasePage):
             else None
         )
         self.load_feasibility_result(feas)
+
+        failure = (
+            eval_dict.get("failure_result")
+            if isinstance(eval_dict, dict)
+            else None
+        )
+        self.load_failure_result(failure)
 
         # Switch to summary tab
         self._tab_widget.setCurrentIndex(0)
