@@ -159,15 +159,15 @@ class TestWorkflowIndicator:
     """Test cases for WorkflowIndicator component."""
     
     def test_workflow_indicator_created(self, qtbot):
-        """WorkflowIndicator instantiates with 4 steps."""
+        """WorkflowIndicator instantiates with 5 steps."""
         indicator = WorkflowIndicator()
         qtbot.addWidget(indicator)
-        
+
         assert indicator is not None
-        assert len(indicator._steps) == 4
-        
+        assert len(indicator._steps) == 5
+
         # Check step labels
-        expected_labels = ["이미지 업로드", "ROI 설정", "분석 실행", "결과 확인"]
+        expected_labels = ["이미지 업로드", "ROI 설정", "검사 목적 입력", "분석 실행", "결과 확인"]
         for i, expected_label in enumerate(expected_labels):
             assert indicator._steps[i]._label == expected_label
             
@@ -201,34 +201,36 @@ class TestWorkflowIndicator:
         assert indicator._steps[3].get_state() == "pending"  # 결과 확인
         
     def test_workflow_indicator_update_with_roi(self, qtbot):
-        """update_from_store with ROI → step 2 done."""
+        """update_from_store with ROI → step 2 done, purpose still pending."""
         indicator = WorkflowIndicator()
         qtbot.addWidget(indicator)
-        
+
         mock_store = MagicMock()
         mock_store.count.return_value = 3
-        
+
         indicator.update_from_store(mock_store, has_roi=True, has_results=False)
-        
-        assert indicator._steps[0].get_state() == "done"  # 이미지 업로드
-        assert indicator._steps[1].get_state() == "done"  # ROI 설정
-        assert indicator._steps[2].get_state() == "active"  # 분석 실행 (ready to run)
-        assert indicator._steps[3].get_state() == "pending"  # 결과 확인
+
+        assert indicator._steps[0].get_state() == "done"    # 이미지 업로드
+        assert indicator._steps[1].get_state() == "done"    # ROI 설정
+        assert indicator._steps[2].get_state() == "pending"  # 검사 목적 (not set)
+        assert indicator._steps[3].get_state() == "pending"  # 분석 실행
+        assert indicator._steps[4].get_state() == "pending"  # 결과 확인
         
     def test_workflow_indicator_update_with_results(self, qtbot):
-        """update_from_store with results → step 3 done, step 4 active."""
+        """update_from_store with results → steps 1-4 done, step 5 active."""
         indicator = WorkflowIndicator()
         qtbot.addWidget(indicator)
-        
+
         mock_store = MagicMock()
         mock_store.count.return_value = 3
-        
-        indicator.update_from_store(mock_store, has_roi=True, has_results=True)
-        
-        assert indicator._steps[0].get_state() == "done"  # 이미지 업로드
-        assert indicator._steps[1].get_state() == "done"  # ROI 설정
-        assert indicator._steps[2].get_state() == "done"  # 분석 실행
-        assert indicator._steps[3].get_state() == "active"  # 결과 확인
+
+        indicator.update_from_store(mock_store, has_roi=True, has_results=True, has_purpose=True)
+
+        assert indicator._steps[0].get_state() == "done"    # 이미지 업로드
+        assert indicator._steps[1].get_state() == "done"    # ROI 설정
+        assert indicator._steps[2].get_state() == "done"    # 검사 목적
+        assert indicator._steps[3].get_state() == "done"    # 분석 실행
+        assert indicator._steps[4].get_state() == "active"  # 결과 확인
         
     def test_workflow_indicator_reset(self, qtbot):
         """reset() → all steps return to pending."""

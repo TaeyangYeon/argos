@@ -195,10 +195,10 @@ class WorkflowStep(QWidget):
 
 class WorkflowIndicator(QWidget):
     """
-    Complete workflow indicator showing all 4 steps of the analysis process.
-    
+    Complete workflow indicator showing all 5 steps of the analysis process.
+
     Automatically manages step states based on ImageStore data and analysis progress.
-    Steps: 이미지 업로드 → ROI 설정 → 분석 실행 → 결과 확인
+    Steps: 이미지 업로드 → ROI 설정 → 검사 목적 입력 → 분석 실행 → 결과 확인
     """
     
     def __init__(self, parent=None):
@@ -232,8 +232,9 @@ class WorkflowIndicator(QWidget):
         step_definitions = [
             (1, "이미지 업로드"),
             (2, "ROI 설정"),
-            (3, "분석 실행"),
-            (4, "결과 확인")
+            (3, "검사 목적 입력"),
+            (4, "분석 실행"),
+            (5, "결과 확인"),
         ]
         
         # Create step widgets
@@ -245,54 +246,50 @@ class WorkflowIndicator(QWidget):
         main_layout.addLayout(steps_layout)
         
     def update_from_store(
-        self, 
-        image_store: ImageStore, 
-        has_roi: bool, 
-        has_results: bool
+        self,
+        image_store: ImageStore,
+        has_roi: bool,
+        has_results: bool,
+        has_purpose: bool = False,
     ) -> None:
         """
         Update step states based on current data and progress.
-        
+
         Args:
             image_store: Current ImageStore instance
             has_roi: Whether ROI has been set
             has_results: Whether analysis results are available
+            has_purpose: Whether inspection purpose has been confirmed
         """
-        # Step 1: 이미지 업로드 - done if any images exist
+        # Step 1: 이미지 업로드
         step1_done = image_store.count() > 0
-        
-        # Step 2: ROI 설정 - done if ROI is set
+
+        # Step 2: ROI 설정
         step2_done = has_roi
-        
-        # Step 3: 분석 실행 - done if results exist, active if steps 1&2 done but no results
-        step3_done = has_results
-        step3_active = step1_done and step2_done and not has_results
-        
-        # Step 4: 결과 확인 - active if results exist
-        step4_active = has_results
-        
+
+        # Step 3: 검사 목적 입력
+        step3_done = has_purpose
+
+        # Step 4: 분석 실행 — done if results exist, active if steps 1-3 done
+        step4_done = has_results
+        step4_active = step1_done and step2_done and step3_done and not has_results
+
+        # Step 5: 결과 확인 — active if results exist
+        step5_active = has_results
+
         # Update step states
-        if step1_done:
-            self._steps[0].set_state("done")
-        else:
-            self._steps[0].set_state("pending")
-            
-        if step2_done:
-            self._steps[1].set_state("done")
-        else:
-            self._steps[1].set_state("pending")
-            
-        if step3_done:
-            self._steps[2].set_state("done")
-        elif step3_active:
-            self._steps[2].set_state("active")
-        else:
-            self._steps[2].set_state("pending")
-            
-        if step4_active:
+        self._steps[0].set_state("done" if step1_done else "pending")
+        self._steps[1].set_state("done" if step2_done else "pending")
+        self._steps[2].set_state("done" if step3_done else "pending")
+
+        if step4_done:
+            self._steps[3].set_state("done")
+        elif step4_active:
             self._steps[3].set_state("active")
         else:
             self._steps[3].set_state("pending")
+
+        self._steps[4].set_state("active" if step5_active else "pending")
             
     def reset(self) -> None:
         """Reset all steps to pending state."""

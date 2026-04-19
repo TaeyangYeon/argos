@@ -56,9 +56,16 @@ class DashboardPage(BasePage):
         self._inspection_ok_card = None
         self._inspection_ng_card = None
         self._total_card = None
-        
+        self._purpose_card = None
+
         # Initialize workflow indicator
         self._workflow_indicator = None
+
+        # Track workflow state
+        self._has_roi = False
+        self._has_purpose = False
+        self._has_results = False
+        self._purpose_type = ""
         
         super().__init__(PageID.DASHBOARD, "대시보드", parent)
         
@@ -114,15 +121,17 @@ class DashboardPage(BasePage):
         
         # Create stat cards with specified colors
         self._align_ok_card = StatCard("Align OK", "0", "", "#1E88E5")  # blue
-        self._inspection_ok_card = StatCard("Inspection OK", "0", "", "#43A047")  # green  
+        self._inspection_ok_card = StatCard("Inspection OK", "0", "", "#43A047")  # green
         self._inspection_ng_card = StatCard("Inspection NG", "0", "", "#E53935")  # red
         self._total_card = StatCard("전체", "0", "", "#FB8C00")  # amber
-        
+        self._purpose_card = StatCard("검사 목적", "미입력", "", "#9E9E9E")  # gray default
+
         # Add cards to layout with equal stretch
         cards_layout.addWidget(self._align_ok_card, 1)
         cards_layout.addWidget(self._inspection_ok_card, 1)
         cards_layout.addWidget(self._inspection_ng_card, 1)
         cards_layout.addWidget(self._total_card, 1)
+        cards_layout.addWidget(self._purpose_card, 1)
         
         parent_layout.addLayout(cards_layout)
         
@@ -233,38 +242,75 @@ class DashboardPage(BasePage):
             # Emit session reset signal
             self.session_reset.emit()
             
+    def on_purpose_confirmed(self, purpose) -> None:
+        """Handle inspection purpose confirmation from PurposePage."""
+        self._has_purpose = True
+        self._purpose_type = getattr(purpose, "inspection_type", "")
+        self._update_purpose_card()
+        self._refresh_workflow()
+
+    def on_roi_confirmed(self, roi_config) -> None:
+        """Handle ROI confirmation from ROIPage."""
+        self._has_roi = True
+        self._refresh_workflow()
+
+    def on_analysis_complete(self, aggregate) -> None:
+        """Handle analysis completion from AnalysisWorker via MainWindow."""
+        self._has_results = True
+        self._refresh_workflow()
+
+    def _update_purpose_card(self) -> None:
+        """Update the purpose StatCard based on current state."""
+        if self._purpose_card:
+            if self._has_purpose:
+                display = self._purpose_type if self._purpose_type else "확정됨"
+                self._purpose_card.update_value("확정됨", display)
+                self._purpose_card.set_accent("#43A047")  # green
+            else:
+                self._purpose_card.update_value("미입력")
+                self._purpose_card.set_accent("#9E9E9E")  # gray
+
+    def _refresh_workflow(self) -> None:
+        """Update workflow indicator with current tracked state."""
+        if self._workflow_indicator:
+            self._workflow_indicator.update_from_store(
+                self._image_store,
+                self._has_roi,
+                self._has_results,
+                self._has_purpose,
+            )
+
     def refresh(self) -> None:
         """
         Update all dashboard components with current data.
-        
+
         Called every time the dashboard becomes visible.
         """
         # Update stat cards
         if self._align_ok_card:
             align_ok_count = self._image_store.count(ImageType.ALIGN_OK)
             self._align_ok_card.update_value(str(align_ok_count))
-            
+
         if self._inspection_ok_card:
             inspection_ok_count = self._image_store.count(ImageType.INSPECTION_OK)
             self._inspection_ok_card.update_value(str(inspection_ok_count))
-            
+
         if self._inspection_ng_card:
             inspection_ng_count = self._image_store.count(ImageType.INSPECTION_NG)
             self._inspection_ng_card.update_value(str(inspection_ng_count))
-            
+
         if self._total_card:
             total_count = self._image_store.count()
             self._total_card.update_value(str(total_count))
-            
+
+        # Update purpose card
+        self._update_purpose_card()
+
         # Update AI status
         self._update_ai_status()
-        
+
         # Update workflow indicator
-        if self._workflow_indicator:
-            # For now, ROI and results are always False - will be updated in later steps
-            has_roi = False
-            has_results = False
-            self._workflow_indicator.update_from_store(self._image_store, has_roi, has_results)
+        self._refresh_workflow()
             
     def _update_ai_status(self) -> None:
         """Update the AI connection status display."""

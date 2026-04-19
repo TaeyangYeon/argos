@@ -137,7 +137,10 @@ class MainWindow(QMainWindow):
         
         # Connect purpose page signals
         self._pages[PageID.PURPOSE].purpose_confirmed.connect(self._on_purpose_confirmed)
-        
+        self._pages[PageID.PURPOSE].purpose_confirmed.connect(
+            self._pages[PageID.DASHBOARD].on_purpose_confirmed
+        )
+
         # Connect analysis page signals
         self._pages[PageID.ANALYSIS].navigate_to_result.connect(
             lambda: self._sidebar.navigate_to(PageID.RESULTS)
@@ -145,9 +148,15 @@ class MainWindow(QMainWindow):
         self._pages[PageID.ANALYSIS].analysis_complete.connect(
             self._pages[PageID.RESULTS].load_all
         )
-        
-        # Connect ROI page signals to update analysis page
+        self._pages[PageID.ANALYSIS].analysis_complete.connect(
+            self._pages[PageID.DASHBOARD].on_analysis_complete
+        )
+
+        # Connect ROI page signals to update analysis page and dashboard
         self._pages[PageID.ROI].roi_confirmed.connect(self._on_roi_confirmed)
+        self._pages[PageID.ROI].roi_confirmed.connect(
+            self._pages[PageID.DASHBOARD].on_roi_confirmed
+        )
         
         # Set initial page to dashboard
         self._sidebar.navigate_to(PageID.DASHBOARD)
