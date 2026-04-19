@@ -96,6 +96,7 @@
 | 2026-04-09 | 26 | [버그] OK/NG 분리도 0% — worker가 analyze_ok_ng_separation() 미호출. Insp OK/NG 이미지 배열 로드 후 호출하도록 수정. 분리도 45.1% 정상 계산 확인 |
 | 2026-04-09 | 26 | [버그6] Pre-flight 검증 로직 오류 — 검사 유형에 상관없이 모든 이미지 타입(ALIGN_OK/INSP_OK/INSP_NG) 요구. InspectionPurpose.inspection_type 기반 vision-type-aware 검증으로 수정. Align-only("위치정렬")→ALIGN_OK만, Inspection-only→OK+NG, 혼합→전부 필요 |
 | 2026-04-16 | 44 | [변경] 탭 라벨 "이미지 특성" → "Feature 분석"으로 변경. load_align_result()에서 탭 전환 제거 — load_all()이 전체 탭 전환 담당. analysis_complete 시그널이 aggregate dict 발행하도록 변경 |
+| 2026-04-19 | 49 | [버그] 테스트 통과하나 실제 앱에서 대시보드 상태 미갱신. 원인: (1) UploadPage.images_updated 시그널 미연결 (2) _on_page_changed에서 대시보드 명시적 refresh 누락 — showEvent만으로는 QStackedWidget에서 불안정 (3) 새 프로젝트 리셋 시 _has_roi/_has_purpose/_has_results 플래그 미초기화 (4) session_reset 미연결로 MainWindow 상태 미정리 (5) 분석 완료 시 최근 분석 결과 카드 미갱신. 5건 모두 수정 |
 
 ---
 

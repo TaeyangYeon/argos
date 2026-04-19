@@ -231,14 +231,20 @@ class DashboardPage(BasePage):
         if msg_box.exec() == QMessageBox.StandardButton.Yes:
             # User confirmed - clear session data
             self._image_store.clear()
-            
+
+            # Reset tracked workflow state
+            self._has_roi = False
+            self._has_purpose = False
+            self._has_results = False
+            self._purpose_type = ""
+
             # Reset workflow indicator
             if self._workflow_indicator:
                 self._workflow_indicator.reset()
-                
+
             # Refresh dashboard
             self.refresh()
-            
+
             # Emit session reset signal
             self.session_reset.emit()
             
@@ -258,6 +264,11 @@ class DashboardPage(BasePage):
         """Handle analysis completion from AnalysisWorker via MainWindow."""
         self._has_results = True
         self._refresh_workflow()
+
+        # Update recent results card
+        if self._results_content_label:
+            self._results_content_label.setText("분석 완료 — 결과 보기 탭에서 상세 내용을 확인하세요.")
+            self._results_content_label.setStyleSheet("color: #43A047; font-size: 12px;")
 
     def _update_purpose_card(self) -> None:
         """Update the purpose StatCard based on current state."""

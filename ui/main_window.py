@@ -134,7 +134,12 @@ class MainWindow(QMainWindow):
         self._pages[PageID.ROI].navigate_requested.connect(
             lambda page_id: self._sidebar.navigate_to(PageID(page_id))
         )
-        
+
+        # Connect upload page → dashboard (image count updates)
+        self._pages[PageID.UPLOAD].images_updated.connect(
+            self._pages[PageID.DASHBOARD].refresh
+        )
+
         # Connect purpose page signals
         self._pages[PageID.PURPOSE].purpose_confirmed.connect(self._on_purpose_confirmed)
         self._pages[PageID.PURPOSE].purpose_confirmed.connect(
@@ -157,6 +162,9 @@ class MainWindow(QMainWindow):
         self._pages[PageID.ROI].roi_confirmed.connect(
             self._pages[PageID.DASHBOARD].on_roi_confirmed
         )
+
+        # Connect dashboard session reset to clean up MainWindow state
+        self._pages[PageID.DASHBOARD].session_reset.connect(self._on_session_reset)
         
         # Set initial page to dashboard
         self._sidebar.navigate_to(PageID.DASHBOARD)
@@ -164,7 +172,7 @@ class MainWindow(QMainWindow):
     def _on_page_changed(self, page_id: PageID) -> None:
         """
         Handle page navigation from sidebar.
-        
+
         Args:
             page_id: The page to navigate to
         """
@@ -174,6 +182,11 @@ class MainWindow(QMainWindow):
             if page_index >= 0:
                 self._content_area.setCurrentIndex(page_index)
                 self._logger.info(f"Switched to page: {page_id.value}")
+
+                # Explicitly refresh dashboard — showEvent alone is unreliable
+                # in QStackedWidget across Qt versions
+                if page_id == PageID.DASHBOARD:
+                    page_widget.refresh()
         else:
             self._logger.error(f"Unknown page ID: {page_id}")
             
@@ -205,6 +218,12 @@ class MainWindow(QMainWindow):
         self._pages[PageID.ANALYSIS].set_roi_config(roi_config)
         self._update_analysis_preflight()
         
+    def _on_session_reset(self) -> None:
+        """Handle session reset from dashboard — clear all stored state."""
+        self._inspection_purpose = None
+        self._roi_config = None
+        self._logger.info("Session reset — cleared inspection purpose and ROI config")
+
     def _update_analysis_preflight(self) -> None:
         """Update analysis page pre-flight check with current state."""
         self._pages[PageID.ANALYSIS].update_preflight(

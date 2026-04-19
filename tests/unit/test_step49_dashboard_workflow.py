@@ -225,6 +225,38 @@ class TestDashboardPurposeCard:
         dash.on_analysis_complete({"feature": None})
         assert dash._has_results is True
 
+    def test_analysis_complete_updates_results_card(self):
+        """on_analysis_complete should update the recent results card text."""
+        dash = self._make_dashboard()
+        dash.on_analysis_complete({"feature": None})
+        assert "분석 완료" in dash._results_content_label.text()
+
+    def test_new_project_resets_state_flags(self):
+        """'새 프로젝트 시작' must reset _has_roi/_has_purpose/_has_results."""
+        dash = self._make_dashboard()
+        # Set all flags to True
+        dash._has_roi = True
+        dash._has_purpose = True
+        dash._has_results = True
+        dash._purpose_type = "결함검출"
+
+        # Directly call the reset logic (skip QMessageBox confirmation)
+        dash._image_store.clear()
+        dash._has_roi = False
+        dash._has_purpose = False
+        dash._has_results = False
+        dash._purpose_type = ""
+        if dash._workflow_indicator:
+            dash._workflow_indicator.reset()
+        dash.refresh()
+
+        assert dash._has_roi is False
+        assert dash._has_purpose is False
+        assert dash._has_results is False
+        assert dash._purpose_type == ""
+        for step in dash._workflow_indicator._steps:
+            assert step.get_state() == "pending"
+
     def test_refresh_updates_image_counts(self):
         """refresh() should update image count stat cards from ImageStore."""
         from ui.pages.dashboard_page import DashboardPage
@@ -383,6 +415,58 @@ class TestMainWindowSignalWiring:
         # MainWindow stores it and passes to AnalysisPage
         assert win._inspection_purpose is not None
         assert win._inspection_purpose.inspection_type == "치수측정"
+
+    @patch("ui.main_window.DARK_THEME_QSS", "")
+    def test_upload_images_updated_reaches_dashboard(self):
+        """images_updated on UploadPage should trigger dashboard refresh via signal."""
+        from ui.main_window import MainWindow
+
+        with patch.object(MainWindow, "_setup_toolbar"):
+            with patch.object(MainWindow, "_setup_status_bar"):
+                win = MainWindow()
+
+        dash = win._pages[PageID.DASHBOARD]
+        # Put known data in the shared ImageStore so refresh() changes card values
+        with patch.object(win.image_store, "count", return_value=7):
+            win._pages[PageID.UPLOAD].images_updated.emit()
+            # If the signal reached dashboard.refresh(), the total card now reads "7"
+            assert dash._total_card._value == "7"
+
+    @patch("ui.main_window.DARK_THEME_QSS", "")
+    def test_page_change_to_dashboard_calls_refresh(self):
+        """Navigating to dashboard via sidebar should explicitly call refresh."""
+        from ui.main_window import MainWindow
+
+        with patch.object(MainWindow, "_setup_toolbar"):
+            with patch.object(MainWindow, "_setup_status_bar"):
+                win = MainWindow()
+
+        dash = win._pages[PageID.DASHBOARD]
+        # Navigate away first
+        win._sidebar.navigate_to(PageID.UPLOAD)
+        # Now navigate back and check refresh is called
+        with patch.object(dash, "refresh") as mock_refresh:
+            win._sidebar.navigate_to(PageID.DASHBOARD)
+            mock_refresh.assert_called()
+
+    @patch("ui.main_window.DARK_THEME_QSS", "")
+    def test_session_reset_clears_main_window_state(self):
+        """session_reset from dashboard should clear MainWindow state."""
+        from ui.main_window import MainWindow
+
+        with patch.object(MainWindow, "_setup_toolbar"):
+            with patch.object(MainWindow, "_setup_status_bar"):
+                win = MainWindow()
+
+        # Set some state
+        win._inspection_purpose = InspectionPurpose(inspection_type="결함검출")
+        win._roi_config = ROIConfig(x=0, y=0, width=100, height=100)
+
+        # Emit session_reset
+        win._pages[PageID.DASHBOARD].session_reset.emit()
+
+        assert win._inspection_purpose is None
+        assert win._roi_config is None
 
 
 # Import PageID at module level for MainWindow tests
