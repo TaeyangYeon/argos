@@ -13,6 +13,7 @@ from PyQt6.QtWidgets import (
 from PyQt6.QtCore import QEvent
 from PyQt6.QtGui import QIcon
 
+from core import __version__
 from core.logger import get_logger
 from core.key_manager import KeyManager
 from core.image_store import ImageStore
@@ -60,7 +61,7 @@ class MainWindow(QMainWindow):
         
     def _setup_window(self) -> None:
         """Setup window properties."""
-        self.setWindowTitle("Argos — Vision Algorithm Agent")
+        self.setWindowTitle(f"Argos v{__version__} — Vision Algorithm Agent")
         self.setMinimumSize(1280, 800)
         
         # Apply dark theme
@@ -238,7 +239,7 @@ class MainWindow(QMainWindow):
         self.setStatusBar(status_bar)
         
         # Version label only (connection status now handled by toolbar)
-        version_label = QLabel("Argos v0.1.0")
+        version_label = QLabel(f"Argos v{__version__}")
         status_bar.addWidget(version_label)
         
     def closeEvent(self, event: QEvent) -> None:

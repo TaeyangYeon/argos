@@ -20,6 +20,7 @@ from .inspection_tab import InspectionTab
 from .feasibility_tab import FeasibilityTab
 from .failure_tab import FailureTab
 from ui.components.sidebar import PageID
+from ui.theme import Tooltips, EmptyStateMessages
 from core.analyzers.feature_analyzer import FullFeatureAnalysis
 
 
@@ -511,9 +512,10 @@ class ResultPage(BasePage):
     
     def __init__(self, parent=None):
         """Initialize the result page."""
-        super().__init__(PageID.RESULTS, "결과 보기", parent)
         self._pending_result = None
         self._results: dict | None = None
+        self._empty_label: QLabel | None = None
+        super().__init__(PageID.RESULTS, "결과 보기", parent)
 
     def setup_ui(self) -> None:
         """Setup the result page UI."""
@@ -581,36 +583,51 @@ class ResultPage(BasePage):
             }
         """)
         
+        # Empty state label (shown when no results yet)
+        self._empty_label = QLabel(f"📊  {EmptyStateMessages.RESULTS}")
+        self._empty_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self._empty_label.setStyleSheet(
+            "color: #9E9E9E; font-size: 16px; padding: 60px; background: transparent;"
+        )
+        layout.addWidget(self._empty_label)
+
         # Create tabs
         self._create_tabs()
-        
+
         layout.addWidget(self._tab_widget)
+        self._tab_widget.setVisible(False)  # 초기에는 탭 숨김
         
     def _create_tabs(self) -> None:
         """Create all result tabs."""
         # 1. 요약 tab
         self._summary_tab = SummaryTab()
-        self._tab_widget.addTab(self._summary_tab, "요약")
+        idx = self._tab_widget.addTab(self._summary_tab, "요약")
+        self._tab_widget.setTabToolTip(idx, Tooltips.TAB_SUMMARY)
 
         # 2. Feature 분석 tab (fully implemented)
         self._feature_tab = FeatureTab()
-        self._tab_widget.addTab(self._feature_tab, "Feature 분석")
+        idx = self._tab_widget.addTab(self._feature_tab, "Feature 분석")
+        self._tab_widget.setTabToolTip(idx, Tooltips.TAB_FEATURE)
 
         # 3. Align 결과 tab (fully implemented)
         self._align_tab = AlignTab()
-        self._tab_widget.addTab(self._align_tab, "Align 결과")
+        idx = self._tab_widget.addTab(self._align_tab, "Align 결과")
+        self._tab_widget.setTabToolTip(idx, Tooltips.TAB_ALIGN)
 
         # 4. Inspection 결과 tab (skeleton)
         self._inspection_tab = InspectionTab()
-        self._tab_widget.addTab(self._inspection_tab, "Inspection 결과")
+        idx = self._tab_widget.addTab(self._inspection_tab, "Inspection 결과")
+        self._tab_widget.setTabToolTip(idx, Tooltips.TAB_INSPECTION)
 
         # 5. Feasibility tab (skeleton)
         self._feasibility_tab = FeasibilityTab()
-        self._tab_widget.addTab(self._feasibility_tab, "Feasibility")
+        idx = self._tab_widget.addTab(self._feasibility_tab, "Feasibility")
+        self._tab_widget.setTabToolTip(idx, Tooltips.TAB_FEASIBILITY)
 
         # 6. Failure 분석 tab
         self._failure_tab = FailureTab()
-        self._tab_widget.addTab(self._failure_tab, "Failure 분석")
+        idx = self._tab_widget.addTab(self._failure_tab, "Failure 분석")
+        self._tab_widget.setTabToolTip(idx, Tooltips.TAB_FAILURE)
         
     def load_result(self, result: FullFeatureAnalysis) -> None:
         """
@@ -765,6 +782,11 @@ class ResultPage(BasePage):
 
         self._results = aggregate
         self._export_btn.setEnabled(True)
+
+        # 결과 도착 시 빈 상태 숨기고 탭 표시
+        if self._empty_label:
+            self._empty_label.setVisible(False)
+        self._tab_widget.setVisible(True)
 
         # Summary
         self.load_summary(aggregate)

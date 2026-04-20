@@ -17,6 +17,7 @@ from .base_page import BasePage, PageHeader
 from ui.components.sidebar import PageID
 from ui.components.section_card import SectionCard
 from ui.components.toast import ToastMessage
+from ui.theme import Tooltips
 from config.settings import Settings
 from config.paths import SETTINGS_FILE
 from config.constants import DEFAULT_SCORE_THRESHOLD
@@ -111,6 +112,8 @@ class SettingsPage(BasePage):
         threshold_layout.addWidget(self._threshold_status_label)
         self._update_threshold_status()
         
+        self._threshold_slider.setToolTip(Tooltips.THRESHOLD)
+        self._threshold_spinbox.setToolTip(Tooltips.THRESHOLD)
         card.add_row("임계값", threshold_widget)
         
         # OK weight slider
@@ -128,6 +131,7 @@ class SettingsPage(BasePage):
         self._ok_weight_label = QLabel("0.5")
         ok_weight_layout.addWidget(self._ok_weight_label)
         
+        self._ok_weight_slider.setToolTip(Tooltips.OK_WEIGHT)
         card.add_row("OK 가중치", ok_weight_widget)
         
         # NG weight slider
@@ -145,6 +149,7 @@ class SettingsPage(BasePage):
         self._ng_weight_label = QLabel("0.5")
         ng_weight_layout.addWidget(self._ng_weight_label)
         
+        self._ng_weight_slider.setToolTip(Tooltips.NG_WEIGHT)
         card.add_row("NG 가중치", ng_weight_widget)
         
         # Weight formula preview
@@ -171,6 +176,8 @@ class SettingsPage(BasePage):
         self._margin_spinbox.valueChanged.connect(self._on_margin_spinbox_changed)
         margin_layout.addWidget(self._margin_spinbox)
         
+        self._margin_slider.setToolTip(Tooltips.MARGIN)
+        self._margin_spinbox.setToolTip(Tooltips.MARGIN)
         card.add_row("분리 마진", margin_widget)
         
         parent_layout.addWidget(card)
@@ -184,6 +191,7 @@ class SettingsPage(BasePage):
         self._ng_min_recommended_spinbox.setRange(1, 100)
         self._ng_min_recommended_spinbox.setValue(3)
         self._ng_min_recommended_spinbox.valueChanged.connect(self._on_value_changed)
+        self._ng_min_recommended_spinbox.setToolTip(Tooltips.NG_MIN_RECOMMENDED)
         card.add_row("NG 최소 권장", self._ng_min_recommended_spinbox)
         
         # NG absolute minimum
@@ -191,6 +199,7 @@ class SettingsPage(BasePage):
         self._ng_absolute_min_spinbox.setRange(1, 100)
         self._ng_absolute_min_spinbox.setValue(1)
         self._ng_absolute_min_spinbox.valueChanged.connect(self._on_value_changed)
+        self._ng_absolute_min_spinbox.setToolTip(Tooltips.NG_ABSOLUTE_MIN)
         card.add_row("NG 절대 최소", self._ng_absolute_min_spinbox)
         
         parent_layout.addWidget(card)
@@ -204,6 +213,7 @@ class SettingsPage(BasePage):
         self._ai_timeout_spinbox.setRange(1, 300)
         self._ai_timeout_spinbox.setValue(30)
         self._ai_timeout_spinbox.valueChanged.connect(self._on_value_changed)
+        self._ai_timeout_spinbox.setToolTip(Tooltips.AI_TIMEOUT)
         card.add_row("타임아웃(초)", self._ai_timeout_spinbox)
         
         # AI retry count
@@ -211,6 +221,7 @@ class SettingsPage(BasePage):
         self._ai_retry_spinbox.setRange(0, 10)
         self._ai_retry_spinbox.setValue(2)
         self._ai_retry_spinbox.valueChanged.connect(self._on_value_changed)
+        self._ai_retry_spinbox.setToolTip(Tooltips.AI_RETRY)
         card.add_row("재시도 횟수", self._ai_retry_spinbox)
         
         parent_layout.addWidget(card)

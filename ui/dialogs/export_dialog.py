@@ -17,6 +17,7 @@ from PyQt6.QtWidgets import (
 from PyQt6.QtCore import Qt
 
 from ui.style import Colors, Fonts
+from ui.theme import Tooltips
 
 
 class ExportDialog(QDialog):
@@ -87,16 +88,19 @@ class ExportDialog(QDialog):
         self._json_checkbox = QCheckBox("JSON (분석 결과 데이터)")
         self._json_checkbox.setChecked(True)
         self._json_checkbox.setStyleSheet(checkbox_style)
+        self._json_checkbox.setToolTip(Tooltips.EXPORT_JSON)
         layout.addWidget(self._json_checkbox)
 
         self._pdf_checkbox = QCheckBox("PDF (분석 리포트)")
         self._pdf_checkbox.setChecked(True)
         self._pdf_checkbox.setStyleSheet(checkbox_style)
+        self._pdf_checkbox.setToolTip(Tooltips.EXPORT_PDF)
         layout.addWidget(self._pdf_checkbox)
 
         self._image_checkbox = QCheckBox("이미지 (오버레이 이미지)")
         self._image_checkbox.setChecked(True)
         self._image_checkbox.setStyleSheet(checkbox_style)
+        self._image_checkbox.setToolTip(Tooltips.EXPORT_IMAGES)
         layout.addWidget(self._image_checkbox)
 
         layout.addStretch()

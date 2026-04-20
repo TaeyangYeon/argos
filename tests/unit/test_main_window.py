@@ -24,7 +24,8 @@ class TestMainWindow:
     
     def test_main_window_title(self, main_window):
         """Test that window title is correctly set."""
-        assert main_window.windowTitle() == "Argos — Vision Algorithm Agent"
+        from core import __version__
+        assert main_window.windowTitle() == f"Argos v{__version__} — Vision Algorithm Agent"
     
     def test_main_window_minimum_size(self, main_window):
         """Test that minimum window size is correctly set."""

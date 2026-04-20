@@ -16,6 +16,7 @@ from core.providers.provider_factory import ProviderFactory
 from core.logger import get_logger
 from .status_indicator import ConnectionStatusWidget
 from ..dialogs.api_key_dialog import APIKeyDialog
+from ui.theme import Tooltips
 
 
 class ArgosToolbar(QToolBar):
@@ -74,6 +75,7 @@ class ArgosToolbar(QToolBar):
         
         # Connection status widget
         self._status_widget = ConnectionStatusWidget()
+        self._status_widget.setToolTip(Tooltips.API_STATUS)
         self.addWidget(self._status_widget)
         
         # Add some spacing
@@ -84,6 +86,7 @@ class ArgosToolbar(QToolBar):
         # API input button
         self._api_button = QPushButton("🔑 API 입력")
         self._api_button.setObjectName("primaryBtn")
+        self._api_button.setToolTip(Tooltips.API_BUTTON)
         self.addWidget(self._api_button)
         
     def _connect_signals(self) -> None:

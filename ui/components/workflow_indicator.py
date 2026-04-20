@@ -10,6 +10,7 @@ from PyQt6.QtCore import Qt, QTimer, pyqtSignal
 from PyQt6.QtGui import QFont, QPainter, QColor, QPen
 
 from core.image_store import ImageStore
+from ui.theme import Tooltips
 
 
 class WorkflowStep(QWidget):
@@ -228,18 +229,19 @@ class WorkflowIndicator(QWidget):
         steps_layout = QVBoxLayout()
         steps_layout.setSpacing(8)
         
-        # Step definitions (in fixed order)
+        # Step definitions (in fixed order) with tooltips
         step_definitions = [
-            (1, "이미지 업로드"),
-            (2, "ROI 설정"),
-            (3, "검사 목적 입력"),
-            (4, "분석 실행"),
-            (5, "결과 확인"),
+            (1, "이미지 업로드", Tooltips.STEP_UPLOAD),
+            (2, "ROI 설정", Tooltips.STEP_ROI),
+            (3, "검사 목적 입력", Tooltips.STEP_PURPOSE),
+            (4, "분석 실행", Tooltips.STEP_ANALYSIS),
+            (5, "결과 확인", Tooltips.STEP_RESULTS),
         ]
-        
+
         # Create step widgets
-        for step_num, step_label in step_definitions:
+        for step_num, step_label, tooltip in step_definitions:
             step = WorkflowStep(step_num, step_label)
+            step.setToolTip(tooltip)
             self._steps.append(step)
             steps_layout.addWidget(step)
             
