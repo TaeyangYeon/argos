@@ -23,7 +23,8 @@ OK/NG 샘플 이미지, ROI, 검사 목적을 입력하면 Align부터 Inspectio
 ### 프로그램 실행 동작 확인
 
 - https://rebel-pyramid-645.notion.site/Argos-AI-Vision-Engineer-Agent-3486a9e71bde80f58ec1c33a08f97b19?source=copy_link
-** 위의 링크로 접속하여 프로그램의 동작 내용을 보실 수 있습니다.**
+
+**위의 링크로 접속하여 프로그램의 동작 내용을 보실 수 있습니다.**
 
 ---
 
